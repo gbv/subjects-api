@@ -1,0 +1,34 @@
+{
+  "schemes": [
+    {
+      "uri": "http://bartoc.org/en/node/241",
+      "notation": ["DDC"],
+      "namespace": "http://dewey.info/",
+      "CQLKEY": "ddc"
+    },
+    {
+      "uri": "http://bartoc.org/en/node/533",
+      "notation": ["RVK"],
+      "namespace": "http://rvk.uni-regensburg.de/nt/",
+      "CQLKEY": "rvk"
+    },
+    {
+      "uri": "http://bartoc.org/en/node/745",
+      "notation": ["BK"],
+      "namespace": "http://uri.gbv.de/terminology/bk/",
+      "CQLKEY": "BKL"
+    },
+    {
+      "uri": "http://bartoc.org/en/node/430",
+      "notation": ["GND"],
+      "namespace": "http://d-nb.info/gnd/",
+      "CQLKEY": "GND"
+    }
+  ],
+  "examples": [
+    "?members=http://uri.gbv.de/terminology/bk/86.78",
+    "?members=http://d-nb.info/gnd/118540475",
+    "?members=http://rvk.uni-regensburg.de/nt/GB_3022",
+    "?members=http://dewey.info/class/612.112"
+  ]
+}

@@ -3,32 +3,68 @@
     {
       "uri": "http://bartoc.org/en/node/241",
       "notation": ["DDC"],
+      "prefLabel": { "de": "Dewey-Dezimalklassifikation", "-":"" },
       "namespace": "http://dewey.info/",
-      "CQLKEY": "ddc"
+      "CQLKEY": "ddc",
+      "PICAPATH": "045F$a",
+      "EXAMPLES": ["612.112"]
     },
     {
       "uri": "http://bartoc.org/en/node/533",
       "notation": ["RVK"],
+      "prefLabel": { "de": "Regensburger Verbundklassifikation", "-":"" },
       "namespace": "http://rvk.uni-regensburg.de/nt/",
-      "CQLKEY": "rvk"
+      "CQLKEY": "rvk",
+      "PICAPATH": "045T$a",
+      "EXAMPLES": ["GB_3022"]
     },
     {
       "uri": "http://bartoc.org/en/node/745",
       "notation": ["BK"],
+      "prefLabel": { "de": "Basisklassifikation", "-":"" },
       "namespace": "http://uri.gbv.de/terminology/bk/",
-      "CQLKEY": "BKL"
+      "CQLKEY": "BKL",
+      "PICAPATH": "045Q[*]$1",
+      "EXAMPLES": ["86.78"]
     },
     {
       "uri": "http://bartoc.org/en/node/430",
       "notation": ["GND"],
+      "prefLabel": { "de": "Gemeinsame Normdatei", "-":"" },
       "namespace": "http://d-nb.info/gnd/",
-      "CQLKEY": "GND"
+      "CQLKEY": "GND",
+      "EXAMPLE": "118540475"
+    },
+    {
+      "uri": "http://bartoc.org/en/node/732",
+      "notation": [ "ASB" ],
+      "prefLabel": { "de": "Allgemeine Systematik für Öffentliche Bibliotheken", "-":"" },
+      "CQLKEY": "ASB",
+      "PICAPATH": "045B[00]$a",
+      "EXAMPLES": ["By"]
+    },
+    {
+      "uri": "http://bartoc.org/en/node/1051",
+      "notation": [ "SSD" ],
+      "prefLabel": { "de": "Systematik der Stadtbibliothek Duisburg", "-":"" },
+      "CQLKEY": "SSD",
+      "PICAPATH": "045B[01]$a",
+      "EXAMPLES": ["BA"]
+    },
+    {
+      "uri": "http://bartoc.org/en/node/335",
+      "notation": [ "SfB" ],
+      "prefLabel": { "de": "Systematik für Bibliotheken", "-":"" },
+      "CQLKEY": "SFB",
+      "PICAPATH": "045B[02]$a"
+    },
+    {
+      "uri": "http://bartoc.org/en/node/1031",
+      "notation": [ "KAB" ],
+      "prefLabel": { "de": "Klassifikation für Allgemeinbibliotheken", "-":"" },
+      "CQLKEY": "KAB",
+      "PICAPATH": "045B[03]$a",
+      "EXAMPLES": ["A_900"]
     }
-  ],
-  "examples": [
-    "?members=http://uri.gbv.de/terminology/bk/86.78",
-    "?members=http://d-nb.info/gnd/118540475",
-    "?members=http://rvk.uni-regensburg.de/nt/GB_3022",
-    "?members=http://dewey.info/class/612.112"
   ]
 }

@@ -4,18 +4,8 @@ include_once 'utils.php';
 
 $config = load('config.json');
 
-if (!$_GET) {
-    error('400', 'missing query parameters', [ 'schemes' => $config['schemes'] ] );
-}
-
 // lists of URIs separated by whitespace or '|'
-$members  = array_filter(preg_split('/[\s|]+/', $_GET['members'] ?? ''));
-
-if (!$members) {
-	error(400, 'missing query parameter members (space-separated list of URIs)');
-} elseif (count($members) > 1) {
-    error(400, 'occurrences with multiple members not supported yet');
-}
+$members  = array_unique(array_filter(preg_split('/[\s|]+/', $_GET['members'] ?? '')));
 
 // detect concept schemes that members origin from
 $members = array_map(function($uri) use ($config) {
@@ -31,7 +21,7 @@ $members = array_map(function($uri) use ($config) {
 }, $members);
 
 // lists of URIs separated by whitespace or '|'
-$schemes = array_filter(preg_split('/[\s|]+/', $_GET['schemes'] ?? ''));
+$schemes = array_unique(array_filter(preg_split('/[\s|]+/', $_GET['schemes'] ?? '')));
 $tmp = [];
 foreach ($config['schemes'] as $scheme) {
     if (in_array($scheme['uri'], $schemes)) {
@@ -39,7 +29,7 @@ foreach ($config['schemes'] as $scheme) {
     }
 }
 $schemes = $tmp;
-unset($schemes[ $members[0]['inScheme'][0]['uri'] ]);
+//unset($schemes[ $members[0]['inScheme'][0]['uri'] ]);
 
 foreach ($schemes as $scheme) {
        if (!isset($scheme['PICAPATH'])) {

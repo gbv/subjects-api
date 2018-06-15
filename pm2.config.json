@@ -1,0 +1,9 @@
+{
+  "apps" : [{
+    "name": "occurrences-api",
+    "script": "app.psgi",
+    "interpreter": "plackup",
+    "interpreter_args": "-Ilib --port 3003"
+  }]
+}
+

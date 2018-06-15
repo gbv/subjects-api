@@ -1,0 +1,11 @@
+language: perl
+
+install:
+
+# travis does not support Ubuntu > 14.04
+#  - sudo xargs apt-get -y install < apt.txt
+
+  - cpanm --installdeps --skip-satisfied . 
+
+script:
+  - prove -l

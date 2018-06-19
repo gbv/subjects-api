@@ -13,7 +13,8 @@ our $HEADERS = [
 ];
 
 sub _body {
-    state $JSON = JSON::PP->new->allow_blessed->utf8->pretty->canonical;
+    state $JSON =
+      JSON::PP->new->convert_blessed->allow_blessed->utf8->pretty->canonical;
     [ $JSON->encode( $_[0]->body ) ];
 }
 

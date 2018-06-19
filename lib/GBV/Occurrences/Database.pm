@@ -4,22 +4,39 @@ use v5.14;
 use URI::Escape;
 use Time::Piece;
 use HTTP::Tiny;
+use JSON::PP;
 use List::Util qw(pairmap);
 use GBV::Occurrences::API::Response;
 
-sub new {
-    my ( $class, $dbkey ) = @_;
+our $CACHE = {};
 
-    bless {
-        dbkey    => $dbkey,
-        uri      => "http://uri.gbv.de/database/$dbkey",
-        srubase  => "http://sru.gbv.de/$dbkey",
-        picabase => "https://gso.gbv.de/DB=2.1/",        # FIXME: don't hardcode
-    }, $class;
+sub new {
+    my ( $class, $uri ) = @_;
+
+    my $db = $CACHE->{$uri} //= do {
+        my $res = HTTP::Tiny->new->get("$uri?format=jsonld");
+
+        error( 404, "unknown database: $uri" ) unless $res->{success};
+        my $db = decode_json( $res->{content} );
+
+        # TODO: add date to count
+        $db->{prefLabel} = delete $db->{title} if $db->{title};
+
+        bless $db, $class;
+    };
+
+    return $db;
+}
+
+sub TO_JSON {
+    my $self = shift;
+    return {%$self};
 }
 
 sub count_via_sru {
     my ( $self, @query ) = @_;
+
+    say STDERR $_ for keys %$self;
 
     my $cql = join ' and ', pairmap { "pica.$a=\"$b\"" } @query;
 
@@ -29,8 +46,6 @@ sub count_via_sru {
       . "&query="
       . uri_escape($cql)
       . "&maximumRecords=0&recordSchema=picaxml";
-
-    say STDERR $url;
 
     my $res = HTTP::Tiny->new->get($url);
     if ( $res->{success} and $res->{content} =~ /numberOfRecords>([0-9]+)</m ) {
@@ -73,8 +88,12 @@ sub _concept_cql {
 sub occurrence {
     my ( $self, @concepts ) = @_;
 
+    my $database = { uri => $self->{uri} };
+    $database->{$_} = $self->{$_}
+      for grep { $self->{$_} } qw(prefLabel notation);
+
     my $occurrence = {
-        database => { uri => $self->{uri} },
+        database => $database,
         modified => localtime->datetime . localtime->strftime('%z')
     };
 

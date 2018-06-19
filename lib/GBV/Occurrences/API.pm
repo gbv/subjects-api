@@ -13,6 +13,11 @@ sub call {
     my ( $self, $env ) = @_;
     my $req = Plack::Request->new($env);
 
+    # database(s)
+    my @databases = parameters( $req, 'database' );
+    push @databases, 'http://uri.gbv.de/database/gvk' unless @databases;
+    @databases = map { GBV::Occurrences::Database->new($_) } @databases;
+
     # concept URIs (die if scheme not detected)
     my @members = map {
         $self->scheme($_)
@@ -25,16 +30,14 @@ sub call {
         grep { $_->{uri} eq $uri } @{ $self->{schemes} }
     } parameters( $req, ' schemes ' );
 
-    # TODO: customize database
-    # $database = array_filter(preg_split(' / [
-    #            \s|]+/', $_GET['database'] ?? ''));
-    my $database = GBV::Occurrences::Database->new('gvk');
-    my $dbkey    = 'gvk';
+    my @occurrences;
 
-    my @occurrences = map { $database->occurrence($_) } @members;
-
-    if ( @occurrences == 2 and ( all { $_->{count} } @occurrences ) ) {
-        push @occurrences, $database->occurrence(@members);
+    foreach my $db (@databases) {
+        my @occ = map { $db->occurrence($_) } @members;
+        if ( @occ == 2 and ( all { $_->{count} } @occurrences ) ) {
+            push @occ, $db->occurrence(@members);
+        }
+        push @occurrences, @occ;
     }
 
     $self->log_occurrences(@occurrences);
@@ -67,8 +70,7 @@ sub log_occurrences {
 
     if ( open( my $fh, '>>', 'occurrences.txt' ) ) {
         foreach (@_) {
-            say join ' ',
-              $_->{database}->{uri}, $_->{modified}, $_->{count},
+            say join ' ', $_->{database}->{uri}, $_->{modified}, $_->{count},
               map { $_->{uri} } @{ $_->{memberSet} };
         }
     }

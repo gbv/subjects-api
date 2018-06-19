@@ -1,0 +1,8 @@
+[
+  {
+    "uri": "http://uri.gbv.de/database/gvk",
+    "url": "https://gso.gbv.de/DB=2.1/",
+    "picabase": "http://gsoapi.gbv.de/DB=2.1/",
+    "srubase": "http://sru.gbv.de/gvk"
+  }
+]

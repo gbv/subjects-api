@@ -5,6 +5,7 @@
       "notation": ["DDC"],
       "prefLabel": { "de": "Dewey-Dezimalklassifikation", "-":"" },
       "namespace": "http://dewey.info/",
+      "identifier": ["http://dewey.info/scheme/edition/e23/"],
       "CQLKEY": "ddc",
       "PICAPATH": "045F$a",
       "EXAMPLES": ["class/612.112"]

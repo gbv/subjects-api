@@ -13,22 +13,41 @@ sub call {
     my ( $self, $env ) = @_;
     my $req = Plack::Request->new($env);
 
-    # database(s)
-    my @databases = parameters( $req, 'database' );
+    error( 404, 'not found' ) if $req->path ne '/';
+
+    # lists of non-empty values separated by whitespace or '|'
+    my $param = sub {
+        grep  { $_ ne '' }
+          map { split /[\s|]+/ } $req->query_parameters->get_all( $_[0] );
+    };
+
+    my %query = (
+        member   => [ $param->('member'), $param->('members') ],
+        scheme   => [ $param->('schemes') ],
+        database => [ $param->('database') ],
+    );
+
+    response( $self->query(%query) )->as_psgi;
+}
+
+sub query {
+    my ( $self, %param ) = @_;
+
+    my @databases = @{ $param{database} // [] };
     push @databases, 'http://uri.gbv.de/database/gvk' unless @databases;
-    @databases = map { GBV::Occurrences::Database->new($_) } @databases;
+    @databases = map { GBV::Occurrences::Database->new($_) } uniq(@databases);
 
-    # concept URIs (die if scheme not detected)
     my @members = map {
-        $self->scheme($_)
+        $self->_scheme($_)
           || error( 404, "failed to detect concept scheme of URI $_" )
-    } parameters( $req, 'members' );
+    } @{ $param{member} // [] };
 
-    # scheme URIs (ignore unknowns)
     my @schemes = map {
         my $uri = $_;
         grep { $_->{uri} eq $uri } @{ $self->{schemes} }
-    } parameters( $req, ' schemes ' );
+    } @{ $param{scheme} // [] };
+
+    # TODO: make use of scheme parameter
 
     my @occurrences;
 
@@ -42,27 +61,18 @@ sub call {
 
     $self->log_occurrences(@occurrences);
 
-    response( \@occurrences )->as_psgi;
+    \@occurrences;
 }
 
-sub parameters {
-
-    # lists of values separated by whitespace or ' | '
-    uniq(
-        grep { $_ ne '' }
-        map  { split /[\s|]+/ } $_[0]->query_parameters->get_all( $_[1] )
-    );
-}
-
-sub startswith {
+sub _startswith {
     defined $_[1] and substr( $_[0], 0, length( $_[1] ) ) eq $_[1];
 }
 
-sub scheme {
+sub _scheme {
     my ( $self, $uri ) = @_;
 
     return { uri => $uri, inScheme => [$_] }
-      for grep { startswith( $uri, $_->{namespace} ) } @{ $self->{schemes} };
+      for grep { _startswith( $uri, $_->{namespace} ) } @{ $self->{schemes} };
 }
 
 sub log_occurrences {

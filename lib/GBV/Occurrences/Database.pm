@@ -36,8 +36,6 @@ sub TO_JSON {
 sub count_via_sru {
     my ( $self, @query ) = @_;
 
-    say STDERR $_ for keys %$self;
-
     my $cql = join ' and ', pairmap { "pica.$a=\"$b\"" } @query;
 
     my $url =
@@ -72,6 +70,9 @@ sub _concept_cql {
     if ( $cqlkey eq 'ddc' ) {
         if ( startswith( $id, 'class/' ) ) {
             $id = substr( $id, length 'class/' );
+            $id =~ s!e\d\d/$!!;    # remove optional edition number
+
+            # TODO: support table entries and decomposed DDC numbers
         }
         else {
             error( 400, "DDC URI not supported: $uri" );

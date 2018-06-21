@@ -113,7 +113,7 @@ sub occurrence {
 
     # TODO: check IKT
     $occurrence->{url} =
-        $self->{picabase}
+        $self->{url}
       . "CMD?ACT=SRCHA&IKT=1016&SRT=YOP&TRM="
       . uri_escape( join ' ', pairmap { "$a \"$b\"" } @query );
 

@@ -6,13 +6,17 @@ use GBV::Occurrences::API;
 my $config = Catmandu::Util::read_json('config.json');
 my $app = GBV::Occurrences::API->new(%$config);
 
-my @examples = qw(
-    http://uri.gbv.de/terminology/bk/77.53
-    http://dewey.info/class/012
-    http://dewey.info/class/012/e23/
-);
+my @uris = qw(http://dewey.info/class/012/e23/); # test with edition
 
-foreach (@examples) {
+foreach my $scheme (@{$config->{schemes}}) {
+    my $namespace = $scheme->{namespace} or next;
+    foreach ( @{$scheme->{EXAMPLES} // []} ) {
+        push @uris, $namespace . $_;
+    }
+}
+
+# test simple occurrences
+foreach (@uris) {
     my $occ = $app->query( member => [$_] );
     ok $occ->[0]->{count} > 0, $_;
 }

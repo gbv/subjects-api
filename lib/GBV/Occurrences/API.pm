@@ -27,7 +27,10 @@ sub call {
         database => [ $param->('database') ],
     );
 
-    response( $self->query(%query) )->as_psgi;
+    my $occurrences = $self->query(%query);
+    $self->log_occurrences(@$occurrences);
+
+    response($occurrences)->as_psgi;
 }
 
 sub query {
@@ -58,8 +61,6 @@ sub query {
         }
         push @occurrences, @occ;
     }
-
-    $self->log_occurrences(@occurrences);
 
     \@occurrences;
 }

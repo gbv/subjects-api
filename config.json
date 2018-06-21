@@ -7,7 +7,7 @@
       "namespace": "http://dewey.info/",
       "CQLKEY": "ddc",
       "PICAPATH": "045F$a",
-      "EXAMPLES": ["612.112"]
+      "EXAMPLES": ["class/612.112"]
     },
     {
       "uri": "http://bartoc.org/en/node/533",
@@ -33,7 +33,7 @@
       "prefLabel": { "de": "Gemeinsame Normdatei", "-":"" },
       "namespace": "http://d-nb.info/gnd/",
       "CQLKEY": "GND",
-      "EXAMPLE": "118540475"
+      "EXAMPLES": ["118540475"]
     },
     {
       "uri": "http://bartoc.org/en/node/732",

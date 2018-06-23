@@ -5,8 +5,11 @@ use URI::Escape;
 use Time::Piece;
 use HTTP::Tiny;
 use JSON::PP;
-use List::Util qw(pairmap);
+use PICA::Path;
+use Scalar::Util qw(blessed);
+use List::Util qw(pairmap uniq);
 use GBV::Occurrences::API::Response;
+use Catmandu::Importer::SRU;
 
 our $CACHE = {};
 
@@ -22,6 +25,9 @@ sub new {
         # TODO: add date to count
         $db->{prefLabel} = delete $db->{title} if $db->{title};
 
+        $db->{limit}     = 400;    # TODO: configure this
+        $db->{threshold} = 2;      # TODO: configure this
+
         bless $db, $class;
     };
 
@@ -34,9 +40,8 @@ sub TO_JSON {
 }
 
 sub count_via_sru {
-    my ( $self, @query ) = @_;
-
-    my $cql = join ' and ', pairmap { "pica.$a=\"$b\"" } @query;
+    my $self = shift;
+    my $cql = join ' and ', pairmap { "pica.$a=\"$b\"" } @_;
 
     my $url =
         $self->{srubase}
@@ -86,28 +91,33 @@ sub _concept_cql {
     return ( $cqlkey, $id );
 }
 
-sub occurrence {
-    my ( $self, @concepts ) = @_;
+sub _occurrence {
+    my $self = shift;
 
     my $database = { uri => $self->{uri} };
     $database->{$_} = $self->{$_}
       for grep { $self->{$_} } qw(prefLabel notation);
 
-    my $occurrence = {
-        database => $database,
-        modified => localtime->datetime . localtime->strftime('%z')
+    return {
+        database  => $database,
+        modified  => localtime->datetime . localtime->strftime('%z'),
+        memberSet => [
+            map {
+                {
+                    uri      => $_->{uri},
+                    inScheme => [ { 'uri' => $_->{inScheme}->[0]->{uri} } ]
+                }
+            } @_
+        ]
     };
+}
+
+sub occurrence {
+    my ( $self, @concepts ) = @_;
+
+    my $occurrence = $self->_occurrence(@concepts);
 
     my @query = map { _concept_cql($_) } @concepts;
-
-    $occurrence->{memberSet} = [
-        map {
-            {
-                uri      => $_->{uri},
-                inScheme => [ { 'uri' => $_->{inScheme}->[0]->{uri} } ]
-            }
-        } @concepts
-    ];
 
     $occurrence->{count} = $self->count_via_sru(@query);
 
@@ -118,6 +128,59 @@ sub occurrence {
       . uri_escape( join ' ', pairmap { "$a \"$b\"" } @query );
 
     return $occurrence;
+}
+
+sub cooccurrences {
+    my ( $self, $concept, @schemes ) = @_;
+
+    # make sure PICAPATH is a PICA::Path object
+    @schemes = grep { $_->{PICAPATH} } @schemes;
+    $_->{PICAPATH} = PICA::Path->new( $_->{PICAPATH} )
+      for grep { !blessed $_->{PICAPATH} } @schemes;
+
+    my $cql = pairmap { "pica.$a=\"$b\"" } _concept_cql($concept);
+
+    my $sru = Catmandu::Importer::SRU->new(
+        base         => $self->{srubase},
+        query        => $cql,
+        limit        => $self->{limit},
+        total        => $self->{limit},
+        recordSchema => 'picaxml',
+        parser       => 'picaxml',
+    );
+
+    my %co;
+
+    $sru->each(
+        sub {
+            foreach my $field ( @{ $_[0]->{record} } ) {
+                foreach my $scheme (@schemes) {
+                    $scheme->{PICAPATH}->match_field($field) or next;
+                    my @values =
+                      uniq( $scheme->{PICAPATH}->match_subfields($field) )
+                      or next;
+                    my $occ = $co{ $scheme->{uri} } //= {};
+                    $occ->{$_}++ for @values;
+                }
+            }
+        }
+    );
+
+    while ( my ( $s, $v ) = each %co ) {
+        say STDERR $s;
+    }
+
+    map {
+        my $inScheme = [ { uri => $_ } ];
+        my $values = $co{$_};
+        map {
+            my $occ = $self->_occurrence($concept);
+            $occ->{count} = $values->{$_};
+            push @{ $occ->{memberSet} },
+              { notation => [$_], inScheme => $inScheme };
+            $occ;
+          } grep { $values->{$_} >= $self->{threshold} } keys %$values
+    } keys %co;
 }
 
 1;

@@ -5,7 +5,7 @@ use GBV::Occurrences::API::Response;
 use GBV::Occurrences::Database;
 
 use Plack::Request;
-use List::Util qw(all uniq);
+use List::Util qw(all uniq any);
 
 use parent 'Plack::Component';
 
@@ -23,7 +23,7 @@ sub call {
 
     my %query = (
         member   => [ $param->('member'), $param->('members') ],
-        scheme   => [ $param->('schemes') ],
+        scheme   => [ $param->('scheme') ],
         database => [ $param->('database') ],
     );
 
@@ -45,20 +45,54 @@ sub query {
           || error( 404, "failed to detect concept scheme of URI $_" )
     } @{ $param{member} // [] };
 
-    my @schemes = map {
-        my $uri = $_;
-        grep { $_->{uri} eq $uri } @{ $self->{schemes} }
-    } @{ $param{scheme} // [] };
+    my @schemes = @{ $param{scheme} // [] };
 
-    # TODO: make use of scheme parameter
+    # all concept schemes
+    if ( length @schemes == 1 and $schemes[0] eq '*' ) {
+        @schemes = @{ $self->{schemes} };
+    }
+
+    # all concept schemes except those what members come from
+    elsif ( length @schemes == 1 and $schemes[0] eq '?' ) {
+        my @memberSchemes = map {
+            map { $_->{uri} }
+              @{ $_->{inScheme} }
+        } @members;
+        @schemes = grep {
+            my $uri = $_->{uri};
+            all { $_ ne $uri } @memberSchemes;
+        } @{ $self->{schemes} };
+    }
+
+    # selected concept schemes only
+    else {
+        @schemes = grep {
+            my %ids =
+              map { $_ => 1 } ( $_->{uri}, @{ $_->{identifier} // [] } );
+            any { $ids{$_} } @schemes
+        } @{ $self->{schemes} };
+    }
 
     my @occurrences;
 
     foreach my $db (@databases) {
+
+        # simple occurrence for each member
         my @occ = map { $db->occurrence($_) } @members;
+
+        # co-occurrence if two members given
         if ( @occ == 2 and ( all { $_->{count} } @occurrences ) ) {
             push @occ, $db->occurrence(@members);
         }
+
+        # co-ocurrence if one member and scheme(s) given
+        elsif ( @occ == 1
+            and @schemes
+            and grep { $_ && $_ < $db->{limit} } $occ[0]->{count} )
+        {
+            push @occ, $db->cooccurrences( $members[0], @schemes );
+        }
+
         push @occurrences, @occ;
     }
 

@@ -25,7 +25,7 @@
       "prefLabel": { "de": "Basisklassifikation", "-":"" },
       "namespace": "http://uri.gbv.de/terminology/bk/",
       "CQLKEY": "BKL",
-      "PICAPATH": "045Q[*]$1",
+      "PICAPATH": "045Q$a",
       "EXAMPLES": ["86.78"]
     },
     {

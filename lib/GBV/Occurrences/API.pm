@@ -25,10 +25,12 @@ sub call {
         member   => [$param->('member'), $param->('members')],
         scheme   => [$param->('scheme')],
         database => [$param->('database')],
+        threshold => $req->query_parameters->get('threshold') // 0,
     );
 
     my $occurrences = $self->query(%query);
-    $self->log_occurrences(@$occurrences);
+
+    #$self->log_occurrences(@$occurrences);
 
     response($occurrences)->as_psgi;
 }
@@ -39,6 +41,9 @@ sub query {
     my @databases = @{$param{database} // []};
     push @databases, 'http://uri.gbv.de/database/gvk' unless @databases;
     @databases = map {GBV::Occurrences::Database->new($_)} uniq(@databases);
+    foreach (@databases) {
+        $_->{threshold} = $param{threshold} if $param{threshold};
+    }
 
     my @members = map {
         $self->_scheme($_)
@@ -77,19 +82,22 @@ sub query {
     foreach my $db (@databases) {
 
         # simple occurrence for each member
-        my @occ = map {$db->occurrence($_)} @members;
+        my @occ = map {$db->occurrence(members => [$_])} @members;
 
         # co-occurrence if two members given
         if (@occ == 2 and (all {$_->{count}} @occurrences)) {
-            push @occ, $db->occurrence(@members);
+            push @occ, $db->occurrence(members => \@members);
         }
 
-        # co-ocurrence if one member and scheme(s) given
-        elsif ( @occ == 1
-            and @schemes
-            and grep {$_ && $_ < $db->{limit}} $occ[0]->{count})
-        {
-            push @occ, $db->cooccurrences($members[0], @schemes);
+        # co-ocurrences
+        if (@schemes && $occ[-1]->{count}) {
+            if ($occ[-1]->{count} <= $db->{limit}) {
+                push @occ,
+                    $db->cooccurrences(
+                    schemes => \@schemes,
+                    members => \@members
+                    );
+            }
         }
 
         push @occurrences, @occ;

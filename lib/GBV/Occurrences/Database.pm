@@ -7,7 +7,7 @@ use HTTP::Tiny;
 use JSON::PP;
 use PICA::Path;
 use Scalar::Util qw(blessed);
-use List::Util qw(pairmap uniq);
+use List::Util qw(pairmap uniq any);
 use GBV::Occurrences::API::Response;
 use Catmandu::Importer::SRU;
 
@@ -25,8 +25,8 @@ sub new {
         # TODO: add date to count
         $db->{prefLabel} = delete $db->{title} if $db->{title};
 
-        $db->{limit}     = 400;    # TODO: configure this
-        $db->{threshold} = 2;      # TODO: configure this
+        $db->{limit}     = 1000;    # TODO: configure this
+        $db->{threshold} = 1;       # TODO: configure this
 
         bless $db, $class;
     };
@@ -41,7 +41,7 @@ sub TO_JSON {
 
 sub count_via_sru {
     my $self = shift;
-    my $cql = join ' and ', pairmap {"pica.$a=\"$b\""} @_;
+    my $cql  = _cql_query(@_);
 
     my $url
         = $self->{srubase}
@@ -91,6 +91,10 @@ sub _concept_cql {
     return ($cqlkey, $id);
 }
 
+sub _cql_query {
+    join ' and ', pairmap {"pica.$a=\"$b\""} @_;
+}
+
 sub _occurrence {
     my $self = shift;
 
@@ -112,13 +116,15 @@ sub _occurrence {
 }
 
 sub occurrence {
-    my ($self, @concepts) = @_;
+    my ($self, %param) = @_;
+    my @concepts = @{$param{members}};
 
     my $occurrence = $self->_occurrence(@concepts);
 
     my @query = map {_concept_cql($_)} @concepts;
 
     $occurrence->{count} = $self->count_via_sru(@query);
+    return () if $occurrence->{count} < $self->{threshold};
 
     # TODO: check IKT
     $occurrence->{url}
@@ -130,14 +136,18 @@ sub occurrence {
 }
 
 sub cooccurrences {
-    my ($self, $concept, @schemes) = @_;
+    my ($self, %param) = @_;
+    my @concepts = @{$param{members}};
 
-    # make sure PICAPATH is a PICA::Path object
-    @schemes = grep {$_->{PICAPATH}} @schemes;
-    $_->{PICAPATH} = PICA::Path->new($_->{PICAPATH})
-        for grep {!blessed $_->{PICAPATH}} @schemes;
+    # only use schemes with PICAPATH
+    my %schemes = map {
+        unless (blessed $_->{PICAPATH}) {
+            $_->{PICAPATH} = PICA::Path->new($_->{PICAPATH});
+        }
+        ($_->{uri} => $_)
+    } grep {$_->{PICAPATH}} @{$param{schemes}};
 
-    my $cql = pairmap {"pica.$a=\"$b\""} _concept_cql($concept);
+    my $cql = _cql_query(map {_concept_cql($_)} @concepts);
 
     my $sru = Catmandu::Importer::SRU->new(
         base         => $self->{srubase},
@@ -153,7 +163,7 @@ sub cooccurrences {
     $sru->each(
         sub {
             foreach my $field (@{$_[0]->{record}}) {
-                foreach my $scheme (@schemes) {
+                foreach my $scheme (values %schemes) {
                     $scheme->{PICAPATH}->match_field($field) or next;
                     my @values
                         = uniq($scheme->{PICAPATH}->match_subfields($field))
@@ -165,21 +175,49 @@ sub cooccurrences {
         }
     );
 
-    while (my ($s, $v) = each %co) {
-        say STDERR $s;
-    }
-
     map {
-        my $inScheme = [{uri => $_}];
+        my $scheme = $_;
         my $values = $co{$_};
         map {
-            my $occ = $self->_occurrence($concept);
-            $occ->{count} = $values->{$_};
-            push @{$occ->{memberSet}},
-                {notation => [$_], inScheme => $inScheme};
-            $occ;
+            my $concept = $self->concept($schemes{$scheme}, $_);
+            if (any {$concept->{uri} eq $_->{uri}} @concepts) {
+                ();
+            }
+            else {
+                my $occ = $self->_occurrence(@concepts);
+                $occ->{count} = $values->{$_};
+                push @{$occ->{memberSet}}, $concept;
+                $occ;
+            }
             } grep {$values->{$_} >= $self->{threshold}} keys %$values
     } keys %co;
+}
+
+# build concept from scheme and notation
+sub concept {
+    my ($self, $scheme, $notation) = @_;
+
+    my $local = $notation;
+    my $uri;
+
+    if ($scheme->{uri} eq 'http://bartoc.org/en/node/241') {    # DDC
+        $uri = $scheme->{namespace} . "class/$notation/e23/";
+    }
+    elsif ($scheme->{uri} eq 'http://bartoc.org/en/node/533') {    # RVK
+        $local =~ s/ /_/g;    # FIXME: this does not recover all
+        $uri = $scheme->{namespace} . $local;
+    }
+
+    # TODO: add more specific rukles
+    elsif ($scheme->{namespace}) {
+        $uri = $scheme->{namespace} . $notation;
+    }
+
+    return {
+        notation => [$notation],
+        inScheme => [{uri => $scheme->{uri}}],
+        ($uri ? (uri => $uri) : ())
+    };
 }
 
 1;

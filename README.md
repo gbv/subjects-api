@@ -35,3 +35,20 @@ With pm2 (modify `pm2.config.json` to change port if needed):
 
     pm2 start pm2.config.json
 
+Update:
+
+    pm2 restart occurrences-api
+
+## Usage
+
+JSKOS Occurrences API is still being defined. Supported query parameters so far:
+
+* `member`
+* `scheme` (use `*` for all)
+* `database`
+* `threshold`
+
+## Examples
+
+* `?member=http://rvk.uni-regensburg.de/nt/IB_1060&scheme=*&threshold=2`
+* ...

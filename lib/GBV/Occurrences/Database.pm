@@ -65,10 +65,10 @@ sub startswith {
 
 sub _concept_cql {
     my $concept = shift;
+    my $scheme = shift // $concept->{inScheme}->[0];
 
-    my $uri    = $concept->{uri};
-    my $scheme = $concept->{inScheme}->[0];
-    my $cqlkey = $scheme->{CQLKEY};
+    my $uri = $concept->{uri};
+    my $cqlkey = $scheme->{CQLKEY} // return ();
 
     my $id = substr($uri, length $scheme->{namespace});
 
@@ -126,11 +126,7 @@ sub occurrence {
     $occurrence->{count} = $self->count_via_sru(@query);
     return () if $occurrence->{count} < $self->{threshold};
 
-    # TODO: check IKT
-    $occurrence->{url}
-        = $self->{url}
-        . "CMD?ACT=SRCHA&IKT=1016&SRT=YOP&TRM="
-        . uri_escape(join ' ', pairmap {"$a \"$b\""} @query);
+    $occurrence->{url} = $self->url(@query);
 
     return $occurrence;
 }
@@ -187,10 +183,25 @@ sub cooccurrences {
                 my $occ = $self->_occurrence(@concepts);
                 $occ->{count} = $values->{$_};
                 push @{$occ->{memberSet}}, $concept;
+
+                my @query
+                    = map {_concept_cql($_, $schemes{$_->{inScheme}->[0]->{uri}})}
+                    @{$occ->{memberSet}};
+                $occ->{url} = $self->url(@query);
+
                 $occ;
             }
             } grep {$values->{$_} >= $self->{threshold}} keys %$values
     } keys %co;
+}
+
+sub url {
+    my $self = shift;
+
+    # TODO: check IKT
+    $self->{url}
+        . "CMD?ACT=SRCHA&IKT=1016&SRT=YOP&TRM="
+        . uri_escape(join ' ', pairmap {"$a \"$b\""} @_);
 }
 
 # build concept from scheme and notation

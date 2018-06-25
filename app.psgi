@@ -1,5 +1,5 @@
 use v5.14;
-use lib 'local/lib/perl5';
+use local::lib 'local';
 use Catmandu::Util;
 use GBV::Occurrences::API;
 use GBV::Occurrences::API::Response;

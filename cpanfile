@@ -10,4 +10,6 @@ requires 'Catmandu', '0.95';
 requires 'Catmandu::SRU', '0.42';
 requires 'Catmandu::PICA', '0.26';
 
+requires 'local::lib';
+
 test_requires 'HTTP::Request';

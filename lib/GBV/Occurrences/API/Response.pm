@@ -13,9 +13,9 @@ our $HEADERS = [
 ];
 
 sub _body {
-    state $JSON =
-      JSON::PP->new->convert_blessed->allow_blessed->utf8->pretty->canonical;
-    [ $JSON->encode( $_[0]->body ) ];
+    state $JSON = JSON::PP->new->convert_blessed->allow_blessed->utf8->pretty
+        ->canonical;
+    [$JSON->encode($_[0]->body)];
 }
 
 sub as_psgi {
@@ -23,12 +23,12 @@ sub as_psgi {
 }
 
 sub response {
-    __PACKAGE__->new( $_[1] // 200, $HEADERS, $_[0] );
+    __PACKAGE__->new($_[1] // 200, $HEADERS, $_[0]);
 }
 
 sub error {
-    my ( $code, $error ) = @_;
-    die response( { error => $error, code => $code }, $code );
+    my ($code, $error) = @_;
+    die response({error => $error, code => $code}, $code);
 }
 
 1;

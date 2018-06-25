@@ -8,6 +8,6 @@ requires 'URI::Escape';
 requires 'List::Util', '1.45';
 requires 'Catmandu', '0.95';
 requires 'Catmandu::SRU', '0.42';
-requires 'Catmandu::PICA' '0.26';
+requires 'Catmandu::PICA', '0.26';
 
 test_requires 'HTTP::Request';

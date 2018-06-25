@@ -9,14 +9,14 @@ use List::Util qw(pairmap);
 
 sub request(@) {    ## no critic
     state $app = Plack::Test->create(
-        Plack::Util::load_psgi( $ENV{TEST_URL} || 'app.psgi' ) );
+        Plack::Util::load_psgi($ENV{TEST_URL} || 'app.psgi'));
 
-    my $method = ( @_ && $_[0] =~ /^[A-Z]+$/ ) ? shift : 'GET';
-    my $url    = ( @_ && $_[0] =~ qr{^/} )     ? shift : '/';
+    my $method = (@_ && $_[0] =~ /^[A-Z]+$/) ? shift : 'GET';
+    my $url    = (@_ && $_[0] =~ qr{^/})     ? shift : '/';
 
-    my $header = @_ && ref $_[ length @_ - 1 ] ? pop : [];
+    my $header = @_ && ref $_[length @_ - 1] ? pop : [];
 
-    $url .= '?' . join( '&', pairmap { "$a=" . uri_escape($b) } @_ ) if @_;
+    $url .= '?' . join('&', pairmap {"$a=" . uri_escape($b)} @_) if @_;
 
-    $app->request( HTTP::Request->new( $method => $url, $header ) );
+    $app->request(HTTP::Request->new($method => $url, $header));
 }

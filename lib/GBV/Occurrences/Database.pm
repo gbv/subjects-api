@@ -14,13 +14,13 @@ use Catmandu::Importer::SRU;
 our $CACHE = {};
 
 sub new {
-    my ( $class, $uri ) = @_;
+    my ($class, $uri) = @_;
 
     my $db = $CACHE->{$uri} //= do {
         my $res = HTTP::Tiny->new->get("$uri?format=jsonld");
 
-        error( 404, "unknown database: $uri" ) unless $res->{success};
-        my $db = decode_json( $res->{content} );
+        error(404, "unknown database: $uri") unless $res->{success};
+        my $db = decode_json($res->{content});
 
         # TODO: add date to count
         $db->{prefLabel} = delete $db->{title} if $db->{title};
@@ -41,26 +41,26 @@ sub TO_JSON {
 
 sub count_via_sru {
     my $self = shift;
-    my $cql = join ' and ', pairmap { "pica.$a=\"$b\"" } @_;
+    my $cql = join ' and ', pairmap {"pica.$a=\"$b\""} @_;
 
-    my $url =
-        $self->{srubase}
-      . "?version=1.2&operation=searchRetrieve"
-      . "&query="
-      . uri_escape($cql)
-      . "&maximumRecords=0&recordSchema=picaxml";
+    my $url
+        = $self->{srubase}
+        . "?version=1.2&operation=searchRetrieve"
+        . "&query="
+        . uri_escape($cql)
+        . "&maximumRecords=0&recordSchema=picaxml";
 
     my $res = HTTP::Tiny->new->get($url);
-    if ( $res->{success} and $res->{content} =~ /numberOfRecords>([0-9]+)</m ) {
+    if ($res->{success} and $res->{content} =~ /numberOfRecords>([0-9]+)</m) {
         return $1;
     }
     else {
-        error( 500, "failed to get occurrences via SRU: $url" );
+        error(500, "failed to get occurrences via SRU: $url");
     }
 }
 
 sub startswith {
-    substr( $_[0], 0, length( $_[1] ) ) eq $_[1];
+    substr($_[0], 0, length($_[1])) eq $_[1];
 }
 
 sub _concept_cql {
@@ -70,33 +70,32 @@ sub _concept_cql {
     my $scheme = $concept->{inScheme}->[0];
     my $cqlkey = $scheme->{CQLKEY};
 
-    my $id = substr( $uri, length $scheme->{namespace} );
+    my $id = substr($uri, length $scheme->{namespace});
 
-    if ( $cqlkey eq 'ddc' ) {
-        if ( startswith( $id, 'class/' ) ) {
-            $id = substr( $id, length 'class/' );
+    if ($cqlkey eq 'ddc') {
+        if (startswith($id, 'class/')) {
+            $id = substr($id, length 'class/');
             $id =~ s!e\d\d/$!!;    # remove optional edition number
 
             # TODO: support table entries and decomposed DDC numbers
         }
         else {
-            error( 400, "DDC URI not supported: $uri" );
+            error(400, "DDC URI not supported: $uri");
         }
     }
-    elsif ( $cqlkey eq 'rvk' || $cqlkey eq 'kab' ) {
+    elsif ($cqlkey eq 'rvk' || $cqlkey eq 'kab') {
         $id =~ s/_/ /g;
         $id =~ s/-/ - /g;
     }
 
-    return ( $cqlkey, $id );
+    return ($cqlkey, $id);
 }
 
 sub _occurrence {
     my $self = shift;
 
-    my $database = { uri => $self->{uri} };
-    $database->{$_} = $self->{$_}
-      for grep { $self->{$_} } qw(prefLabel notation);
+    my $database = {uri => $self->{uri}};
+    $database->{$_} = $self->{$_} for grep {$self->{$_}} qw(prefLabel notation);
 
     return {
         database  => $database,
@@ -105,7 +104,7 @@ sub _occurrence {
             map {
                 {
                     uri      => $_->{uri},
-                    inScheme => [ { 'uri' => $_->{inScheme}->[0]->{uri} } ]
+                    inScheme => [{'uri' => $_->{inScheme}->[0]->{uri}}]
                 }
             } @_
         ]
@@ -113,32 +112,32 @@ sub _occurrence {
 }
 
 sub occurrence {
-    my ( $self, @concepts ) = @_;
+    my ($self, @concepts) = @_;
 
     my $occurrence = $self->_occurrence(@concepts);
 
-    my @query = map { _concept_cql($_) } @concepts;
+    my @query = map {_concept_cql($_)} @concepts;
 
     $occurrence->{count} = $self->count_via_sru(@query);
 
     # TODO: check IKT
-    $occurrence->{url} =
-        $self->{url}
-      . "CMD?ACT=SRCHA&IKT=1016&SRT=YOP&TRM="
-      . uri_escape( join ' ', pairmap { "$a \"$b\"" } @query );
+    $occurrence->{url}
+        = $self->{url}
+        . "CMD?ACT=SRCHA&IKT=1016&SRT=YOP&TRM="
+        . uri_escape(join ' ', pairmap {"$a \"$b\""} @query);
 
     return $occurrence;
 }
 
 sub cooccurrences {
-    my ( $self, $concept, @schemes ) = @_;
+    my ($self, $concept, @schemes) = @_;
 
     # make sure PICAPATH is a PICA::Path object
-    @schemes = grep { $_->{PICAPATH} } @schemes;
-    $_->{PICAPATH} = PICA::Path->new( $_->{PICAPATH} )
-      for grep { !blessed $_->{PICAPATH} } @schemes;
+    @schemes = grep {$_->{PICAPATH}} @schemes;
+    $_->{PICAPATH} = PICA::Path->new($_->{PICAPATH})
+        for grep {!blessed $_->{PICAPATH}} @schemes;
 
-    my $cql = pairmap { "pica.$a=\"$b\"" } _concept_cql($concept);
+    my $cql = pairmap {"pica.$a=\"$b\""} _concept_cql($concept);
 
     my $sru = Catmandu::Importer::SRU->new(
         base         => $self->{srubase},
@@ -153,33 +152,33 @@ sub cooccurrences {
 
     $sru->each(
         sub {
-            foreach my $field ( @{ $_[0]->{record} } ) {
+            foreach my $field (@{$_[0]->{record}}) {
                 foreach my $scheme (@schemes) {
                     $scheme->{PICAPATH}->match_field($field) or next;
-                    my @values =
-                      uniq( $scheme->{PICAPATH}->match_subfields($field) )
-                      or next;
-                    my $occ = $co{ $scheme->{uri} } //= {};
+                    my @values
+                        = uniq($scheme->{PICAPATH}->match_subfields($field))
+                        or next;
+                    my $occ = $co{$scheme->{uri}} //= {};
                     $occ->{$_}++ for @values;
                 }
             }
         }
     );
 
-    while ( my ( $s, $v ) = each %co ) {
+    while (my ($s, $v) = each %co) {
         say STDERR $s;
     }
 
     map {
-        my $inScheme = [ { uri => $_ } ];
+        my $inScheme = [{uri => $_}];
         my $values = $co{$_};
         map {
             my $occ = $self->_occurrence($concept);
             $occ->{count} = $values->{$_};
-            push @{ $occ->{memberSet} },
-              { notation => [$_], inScheme => $inScheme };
+            push @{$occ->{memberSet}},
+                {notation => [$_], inScheme => $inScheme};
             $occ;
-          } grep { $values->{$_} >= $self->{threshold} } keys %$values
+            } grep {$values->{$_} >= $self->{threshold}} keys %$values
     } keys %co;
 }
 

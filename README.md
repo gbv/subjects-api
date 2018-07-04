@@ -13,17 +13,14 @@ From source:
 
 Requires Perl >= 5.14.0, cpanminus and Perl packages listed in `cpanfile`. Perl
 modules should be installed indepdendently from system Perl into subdirectoy
-`local`. This may take a while.
+`local` with local::lib:
 
-~~~
-cpanm --installdeps --skip-satisifed --notest -L local .
-~~~
+    eval $(perl -Mlocal::lib=local)
+    cpanm --installdeps --notest .
 
 You may first need to install system packages listed in `apt.txt`:
 
-~~~
-sudo xargs apt-get -y install < apt.txt
-~~~
+    sudo xargs apt-get -y install < apt.txt
 
 ## Development
 
@@ -31,13 +28,13 @@ sudo xargs apt-get -y install < apt.txt
 
 ## Deployment
 
-With pm2 (modify `pm2.config.json` to change port if needed):
+With pm2 (modify `ecosystem.config.json` to change port if needed):
 
-    pm2 start pm2.config.json
+    pm2 start ecosystem.config.json
 
 Update:
 
-    pm2 restart occurrences-api
+    pm2 reload occurrences-api
 
 ## Usage
 

@@ -1,5 +1,4 @@
 use v5.14;
-use local::lib 'local';
 use Catmandu::Util;
 use GBV::Occurrences::API;
 use GBV::Occurrences::API::Response;

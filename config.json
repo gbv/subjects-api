@@ -20,7 +20,7 @@
       "EXAMPLES": ["GB_3022"]
     },
     {
-      "uri": "http://bartoc.org/en/node/745",
+      "uri": "http://bartoc.org/en/node/18785",
       "notation": ["BK"],
       "prefLabel": { "de": "Basisklassifikation", "-":"" },
       "namespace": "http://uri.gbv.de/terminology/bk/",

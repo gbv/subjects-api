@@ -47,5 +47,5 @@ JSKOS Occurrences API is still being defined. Supported query parameters so far:
 
 ## Examples
 
-* `?member=http://rvk.uni-regensburg.de/nt/IB_1060&scheme=*&threshold=2`
+* <http://coli-conc.gbv.de/occurrences/api/?member=http://uri.gbv.de/terminology/bk/35.08&scheme=*&threshold=2>
 * ...

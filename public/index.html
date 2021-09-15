@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Occurrences API</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+    body {
+      margin: 20px;
+    }
+    a:link, a:visited {
+      text-decoration: none;
+      color: rgb(96, 143, 219);
+    }
+    a:hover, a:active {
+      text-decoration: underline;
+    }
+    </style>
+  </head>
+  <body>
+    <h1>Occurrences API</h1>
+    <h2>Available Endpoints</h2>
+    <p>
+      This services provides an API to look up number of records (occurrences) indexed with a concept in a database or a list of concepts to are also used to index these records (co-occurrences).
+    </p>
+    <h3>Concept Schemes</h3>
+    <ul>
+      <li>GET <a href="voc">/voc</a> - Returns a list of supported vocabularies (concept schemes) (<a href="https://github.com/gbv/occurrences-api#get-voc" target="_blank">documentation</a>)</li>
+    </ul>
+    <h3>Databases</h3>
+    <ul>
+      <li>GET <a href="databases">/databases</a> - Returns a list of supported databases (<a href="https://github.com/gbv/occurrences-api#get-databases" target="_blank">documentation</a>)</li>
+
+    </ul>
+    <h3>Occurrences</h3>
+    <ul>
+      <li>GET <a href="occurrences">/occurrences</a> - Returns occurrences or co-occurrences (<a href="https://github.com/gbv/occurrences-api#get-occurrences" target="_blank">documentation</a>)</li>
+    </ul>
+  </body>
+</html>  

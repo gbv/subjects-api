@@ -5,7 +5,7 @@ use GBV::Occurrences::API::Response;
 use GBV::Occurrences::Database;
 
 use Plack::Request;
-use List::Util qw(all uniq any);
+use List::Util qw(all uniq any first);
 
 use parent 'Plack::Component';
 
@@ -22,10 +22,10 @@ sub call {
     };
 
     my %query = (
-        member   => [$param->('member'), $param->('members')],
-        scheme   => [$param->('scheme')],
-        database => [$param->('database')],
-        threshold => $req->query_parameters->get('threshold') // 0,
+        member    => [$param->('member')],
+        scheme    => [$param->('scheme')],
+        database  => [$param->('database')],
+        threshold => $req->query_parameters->get('threshold'),
     );
 
     my $occurrences = $self->query(%query);
@@ -38,12 +38,15 @@ sub call {
 sub query {
     my ($self, %param) = @_;
 
-    my @databases = @{$param{database} // []};
-    push @databases, 'http://uri.gbv.de/database/gvk' unless @databases;
-    @databases = map {GBV::Occurrences::Database->new($_)} uniq(@databases);
-    foreach (@databases) {
-        $_->{threshold} = $param{threshold} if $param{threshold};
-    }
+    my $dbid
+        = $param{database}->[0] || error(400, "Missing database parameter");
+
+    my $db = first {$_->{uri} eq $dbid or $_->{dbkey} eq $dbid}
+    @{$self->{databases}};
+    error(404, "unknown database") unless $db;
+    $db = GBV::Occurrences::Database->new($db);
+
+    $db->{threshold} = $param{threshold} || 1;
 
     my @members = map {
         $self->_scheme($_)
@@ -79,29 +82,23 @@ sub query {
 
     my @occurrences;
 
-    foreach my $db (@databases) {
+    # simple occurrence for each member
+    my @occ = map {$db->occurrence(members => [$_])} @members;
 
-        # simple occurrence for each member
-        my @occ = map {$db->occurrence(members => [$_])} @members;
-
-        # co-occurrence if two members given
-        if (@occ == 2 and (all {$_->{count}} @occurrences)) {
-            push @occ, $db->occurrence(members => \@members);
-        }
-
-        # co-ocurrences
-        if (@schemes && $occ[-1]->{count}) {
-            if ($occ[-1]->{count} <= $db->{limit}) {
-                push @occ,
-                    $db->cooccurrences(
-                    schemes => \@schemes,
-                    members => \@members
-                    );
-            }
-        }
-
-        push @occurrences, @occ;
+    # co-occurrence if two members given
+    if (@occ == 2 and (all {$_->{count}} @occurrences)) {
+        push @occ, $db->occurrence(members => \@members);
     }
+
+    # co-ocurrences
+    if (@schemes && $occ[-1]->{count}) {
+        if ($occ[-1]->{count} <= $db->{limit}) {
+            push @occ,
+                $db->cooccurrences(schemes => \@schemes, members => \@members);
+        }
+    }
+
+    push @occurrences, @occ;
 
     \@occurrences;
 }

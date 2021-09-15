@@ -6,9 +6,9 @@ requires 'Plack::Middleware::XForwardedFor';
 
 requires 'URI::Escape';
 requires 'List::Util', '1.45';
-requires 'Catmandu', '0.95';
-requires 'Catmandu::SRU', '0.42';
-requires 'Catmandu::PICA', '0.26';
+requires 'Catmandu', '1.2010';
+requires 'Catmandu::SRU', '0.43';
+requires 'Catmandu::PICA', '1.07';
 
 requires 'local::lib';
 

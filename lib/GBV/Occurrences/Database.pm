@@ -11,34 +11,15 @@ use List::Util qw(pairmap uniq any);
 use GBV::Occurrences::API::Response;
 use Catmandu::Importer::SRU;
 
-our $CACHE = {};
-
 sub new {
-    my ($class, $uri) = @_;
+    my ($class, $db) = @_;
 
-    my $db = $CACHE->{$uri} //= do {
-        my $res = HTTP::Tiny->new->get("$uri?format=jsonld");
+    $db->{limit} = 1000;    # TODO: configure this
 
-        error(404, "unknown database: $uri") unless $res->{success};
-        my $db = decode_json($res->{content});
-
-        # TODO: add date to count
-        $db->{prefLabel} = delete $db->{title} if $db->{title};
-
-        $db->{limit}     = 1000;    # TODO: configure this
-        $db->{threshold} = 1;       # TODO: configure this
-
-        bless $db, $class;
-    };
-
-    return $db;
+    bless $db, $class;
 }
 
-sub TO_JSON {
-    my $self = shift;
-    return {%$self};
-}
-
+# TODO: use Catmandu instead
 sub count_via_sru {
     my $self = shift;
     my $cql  = _cql_query(@_);

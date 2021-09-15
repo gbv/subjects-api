@@ -2,12 +2,25 @@ use v5.14;
 use Catmandu::Util;
 use GBV::Occurrences::API;
 use GBV::Occurrences::API::Response;
-use GBV::Occurrences::Database;
 use Plack::Builder;
+use Plack::App::Directory;
 use List::Util 'any';
 
-my $config = Catmandu::Util::read_json('config.json');
-my $app    = GBV::Occurrences::API->new(%$config);
+my $schemes = Catmandu::Util::read_json('data/schemes.json');
+my $dbs     = Catmandu::Util::read_json('data/databases.json');
+my $app     = GBV::Occurrences::API->new(schemes => $schemes, databases => $dbs);
+
+{
+    package DirectoryIndex; ## no critic
+    use parent 'Plack::App::Directory';
+
+    sub serve_path {
+        my ($self, $env, $dir) = @_;
+        $dir =~ s/\.$//;
+        $dir .= "index.html" if -d $dir and -f "${dir}index.html";
+        $self->SUPER::serve_path($env, $dir);
+    }
+}
 
 builder {
     enable_if { $ENV{HTTP_PROXY} } 'XForwardedFor',
@@ -20,29 +33,27 @@ builder {
     enable 'HTTPExceptions';    # serialize exceptions as JSON
 
     builder {
-        mount '/database' => sub {
-            my $env = shift;
-            my @dbs = values %{$GBV::Occurrences::Database::CACHE};
-            response( \@dbs )->as_psgi;
+        mount '/databases' => sub {
+            response( $dbs )->as_psgi;
         };
         mount '/voc' => sub {
-            my @schemes = map {
-                my %s = %$_;
-                +{ map { $_ => $s{$_} } grep { $_ !~ /^[A-Z]/ } keys %s };
-            } @{ $config->{schemes} };
+            my $env = shift;
+            my $uri = Plack::Request->new($env)->parameters->{uri};
+            my @uris = defined $uri ? split /\|/, $uri : ();
+            my @voc = @$schemes;
 
-            my $param = Plack::Request->new(shift)->parameters;
-
-            @schemes = grep { $_->{uri} eq $param->{uri} } @schemes
-              if $param->{uri};
-
-            @schemes = grep {
-                    any { $_ eq $param->{id} }
+            if (@uris) {
+                my %ids = map { $_ => 1 } @uris;
+                @voc = grep {
+                    any { exists $ids{$_} }
                     ($_->{uri}, @{ $_->{identifier} // [] })
-                } @schemes if $param->{id};
+                } @voc
+            }
 
-                response( \@schemes )->as_psgi;
-            };
-        mount '/' => $app->to_app;
+            response( \@voc )->as_psgi;
+        };
+        mount '/occurrences' => $app->to_app;
+
+        mount '/' => DirectoryIndex->new( root => 'public' );
     }
 }

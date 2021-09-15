@@ -1,4 +1,4 @@
-Simple JSON API to retrieve [JSKOS Concept Occurrences](http://gbv.github.io/jskos/jskos.html#concept-occurrences) from GBV databases.
+Simple JSON API to retrieve [JSKOS Concept Occurrences](http://gbv.github.io/jskos/jskos.html#concept-occurrences) from PICA databases.
 
 [![Build Status](https://travis-ci.org/gbv/occurrences-api.svg)](https://travis-ci.org/gbv/occurrences-api)
 [![Coverage Status](https://coveralls.io/repos/gbv/occurrences-api/badge.svg)](https://coveralls.io/r/gbv/occurrences-api)
@@ -26,26 +26,54 @@ You may first need to install system packages listed in `apt.txt`:
 
     plackup -Ilib -r 
 
+## Configuration
+
+Initialize or update the list of supported vocabularies from BARTOC.org:
+
+    script/update-schemes.sh
+
+Initialize or update the list of supported PICA databases from <http://uri.gbv.de/database/>:
+
+    script/update-databases.sh
+
 ## Deployment
 
 With pm2 (modify `ecosystem.config.json` to change port if needed):
 
     pm2 start ecosystem.config.json
 
-Update:
+Update (also required after configuration has been changed):
 
     pm2 reload occurrences-api
 
-## Usage
+## API
 
-JSKOS Occurrences API is still being defined. Supported query parameters so far:
+### GET /occurrences
 
-* `member`
-* `scheme` (use `*` for all)
+List occurrences or co-occurrences of a concept in a database.
+
+**Parameters:**
+
+* `member` - 
 * `database`
+* `scheme` (use `*` for all)
 * `threshold`
+
+Occurrences are returned if no `scheme` is given, co-occurrences are returned otherwise.
+
+### GET /voc
+
+List supported vocabularies (concept schemes) as array of [JSKOS Concept Schemes](https://gbv.github.io/jskos/jskos.html#concept-schemes).
+
+This endpoint is compatible with [JSKOS Server endpoint /voc](https://github.com/gbv/jskos-server#get-voc) but it only supports URL parameter `uri`.
+
+### GET /databases 
+
+List supported databases as array of JSON objects.
+
+*The format of a database record (except fields `uri` and `prefLabel`) may slightly change in a future version of this service.*
 
 ## Examples
 
-* <http://coli-conc.gbv.de/occurrences/api/?member=http://uri.gbv.de/terminology/bk/35.08&scheme=*&threshold=2>
+* <http://coli-conc.gbv.de/occurrences/api/occurrences?member=http://uri.gbv.de/terminology/bk/35.08&database=opac-de-627&scheme=*&threshold=2>
 * ...

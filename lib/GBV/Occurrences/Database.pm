@@ -6,6 +6,7 @@ use Time::Piece;
 use HTTP::Tiny;
 use JSON::PP;
 use PICA::Path;
+use PICA::Data qw(pica_values);
 use Scalar::Util qw(blessed);
 use List::Util qw(pairmap uniq any);
 use GBV::Occurrences::API::Response;
@@ -14,12 +15,12 @@ use Catmandu::Importer::SRU;
 sub new {
     my ($class, $db) = @_;
 
-    $db->{limit} = 1000;    # TODO: configure this
+    $db->{limit} = 2000;    # TODO: configure this
 
     bless $db, $class;
 }
 
-# TODO: use Catmandu instead
+# TODO: use Catmandu with parser meta instead
 sub count_via_sru {
     my $self = shift;
     my $cql  = _cql_query(@_);
@@ -82,6 +83,7 @@ sub _occurrence {
     my $database = {uri => $self->{uri}};
     $database->{$_} = $self->{$_} for grep {$self->{$_}} qw(prefLabel notation);
 
+    # TODO: add notation of concept
     return {
         database  => $database,
         modified  => localtime->datetime . localtime->strftime('%z'),
@@ -129,7 +131,6 @@ sub cooccurrences {
     my $sru = Catmandu::Importer::SRU->new(
         base         => $self->{srubase},
         query        => $cql,
-        limit        => $self->{limit},
         total        => $self->{limit},
         recordSchema => 'picaxml',
         parser       => 'picaxml',
@@ -139,15 +140,13 @@ sub cooccurrences {
 
     $sru->each(
         sub {
-            foreach my $field (@{$_[0]->{record}}) {
-                foreach my $scheme (values %schemes) {
-                    $scheme->{PICAPATH}->match_field($field) or next;
-                    my @values
-                        = uniq($scheme->{PICAPATH}->match_subfields($field))
-                        or next;
-                    my $occ = $co{$scheme->{uri}} //= {};
-                    $occ->{$_}++ for @values;
-                }
+            my $record = shift;
+
+            foreach my $scheme (values %schemes) {
+                my @values = uniq(pica_values($record, $scheme->{PICAPATH}))
+                    or next;
+                my $occ = $co{$scheme->{uri}} //= {};
+                $occ->{$_}++ for @values;
             }
         }
     );

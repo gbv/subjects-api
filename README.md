@@ -54,12 +54,12 @@ List occurrences or co-occurrences of a concept in a database.
 
 **Parameters:**
 
-* `member` - 
-* `database`
+* `member` - concept URI to search for
+* `database` - database URI or database key to search in
 * `scheme` (use `*` for all)
-* `threshold`
+* `threshold` - minimal number of co-occurrences to report (default is 2)
 
-Occurrences are returned if no `scheme` is given, co-occurrences are returned otherwise.
+Occurrences are returned if no `scheme` is given, co-occurrences are returned otherwise, unless the total number of records exceeds 2000.
 
 ### GET /voc
 
@@ -75,5 +75,6 @@ List supported databases as array of JSON objects.
 
 ## Examples
 
-* <http://coli-conc.gbv.de/occurrences/api/occurrences?member=http://uri.gbv.de/terminology/bk/35.08&database=opac-de-627&scheme=*&threshold=2>
-* ...
+* <http://coli-conc.gbv.de/occurrences/api/occurrences?member=http://uri.gbv.de/terminology/bk/35.08&database=opac-de-627&scheme=*&threshold=2> (BK)
+* <http://coli-conc.gbv.de/occurrences/api/occurrences?member=http://uri.gbv.de/terminology/bk/35.08&database=opac-de-627&scheme=http://bartoc.org/en/node/533&threshold=2> (BK->RVK)
+* <http://coli-conc.gbv.de/occurrences/api/occurrences?member=http://rvk.uni-regensburg.de/nt/AR_25100&database=opac-de-627&scheme=http://bartoc.org/en/node/18785>

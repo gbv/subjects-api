@@ -5,10 +5,24 @@ use GBV::Occurrences::API::Response;
 use Plack::Builder;
 use Plack::App::Directory;
 use List::Util 'any';
+use PICA::Path;
 
 my $schemes = Catmandu::Util::read_json('data/schemes.json');
+
+# filter out invalid PICA PATH
+for (@$schemes) {
+    my $path = $_->{PICAPATH} or next;
+    # validate PICA Path expressions
+    eval { PICA::Path->new($path) };
+    if ($@) {
+        warn "Invalid PICA Path: '$path'\n";
+        delete $_->{PICAPATH};
+    }
+}
+
 my $dbs     = Catmandu::Util::read_json('data/databases.json');
 my $app     = GBV::Occurrences::API->new(schemes => $schemes, databases => $dbs);
+
 
 {
     package DirectoryIndex; ## no critic
@@ -53,7 +67,6 @@ builder {
             response( \@voc )->as_psgi;
         };
         mount '/occurrences' => $app->to_app;
-
-        mount '/' => DirectoryIndex->new( root => 'public' );
+        mount '/' => DirectoryIndex->new( root => 'public' )->to_app;
     }
 }

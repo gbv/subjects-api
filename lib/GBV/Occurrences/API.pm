@@ -46,7 +46,7 @@ sub query {
     error(404, "unknown database") unless $db;
     $db = GBV::Occurrences::Database->new($db);
 
-    $db->{threshold} = $param{threshold} || 1;
+    $db->{threshold} = $param{threshold} || 2;
 
     my @members = map {
         $self->_scheme($_)
@@ -60,7 +60,7 @@ sub query {
         @schemes = @{$self->{schemes}};
     }
 
-    # all concept schemes except those what members come from
+    # all concept schemes except those what members come from (TODO: document)
     elsif (length @schemes == 1 and $schemes[0] eq '?') {
         my @memberSchemes = map {
             map {$_->{uri}}
@@ -85,7 +85,7 @@ sub query {
     # simple occurrence for each member
     my @occ = map {$db->occurrence(members => [$_])} @members;
 
-    # co-occurrence if two members given
+    # co-occurrence if two members given (TODO: document this)
     if (@occ == 2 and (all {$_->{count}} @occurrences)) {
         push @occ, $db->occurrence(members => \@members);
     }

@@ -9,9 +9,10 @@
 
 ## Table of Contents <!-- omit in toc -->
 - [Install](#install)
-- [Configuration](#configuration)
+  - [Configuration](#configuration)
+- [Usage](#usage)
 - [Maintainers](#maintainers)
-- [Contribute](#contribute)
+- [Contributing](#contributing)
   - [Publish](#publish)
 - [License](#license)
 
@@ -25,7 +26,7 @@ cd occurrences-api
 npm i
 ```
 
-## Configuration
+### Configuration
 
 <!-- TODO: Make it easier to provide the database file. -->
 1. (required) You need an SQLite database file under `subjects.db` which contains PPNs and their cataloging from the K10plus catalog. See [K10Plus Subjects] on how to obtain this database file.
@@ -40,12 +41,18 @@ SCHEMES=./schemes.json
 
 3. (optional) All vocabularies supported in [K10Plus Subjects] are preconfigured. To override those vocabularies, set the `SCHEMES` config option to a JSON file provided by you.
 
+## Usage
+
+```bash
+npm run start
+```
+
 ## Maintainers
 
 - [@stefandesu](https://github.com/stefandesu)
 - [@nichtich](https://github.com/nichtich)
 
-## Contribute
+## Contributing
 
 PRs accepted against the `dev` branch.
 

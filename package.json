@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon -w .env -w src/ src/index.js",
-    "lint-staged": "lint-staged"
+    "lint-staged": "lint-staged && standard-readme"
   },
   "lint-staged": {
     "**/*.js": [
@@ -37,6 +37,7 @@
     "eslint": "^8.19.0",
     "eslint-config-gbv": "^1.0.3",
     "lint-staged": "^13.0.3",
-    "pre-commit": "^1.2.2"
+    "pre-commit": "^1.2.2",
+    "standard-readme": "^2.0.4"
   }
 }

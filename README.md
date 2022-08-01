@@ -1,4 +1,4 @@
-# Occurrences API
+# Occurrences-API
 
 <!-- [![Test](https://github.com/gbv/jskos-server/actions/workflows/test.yml/badge.svg)](https://github.com/gbv/jskos-server/actions/workflows/test.yml) -->
 [![GitHub package version](https://img.shields.io/github/package-json/v/gbv/occurrences-api.svg?label=version)](https://github.com/gbv/occurrences-api)
@@ -7,7 +7,7 @@
 
 > API to provide co-occurrences based on the K10plus catalog.
 
-## Table of Contents <!-- omit in toc -->
+## Table of Contents
 - [Install](#install)
   - [Configuration](#configuration)
 - [Usage](#usage)
@@ -29,7 +29,7 @@ npm i
 ### Configuration
 
 <!-- TODO: Make it easier to provide the database file. -->
-1. (required) You need an SQLite database file under `subjects.db` which contains PPNs and their cataloging from the K10plus catalog. See [K10Plus Subjects] on how to obtain this database file.
+1. (required) You need an SQLite database file under `subjects.db` which contains PPNs and their cataloging from the K10plus catalog. The database is expected to include a table `subjects` with columns `ppn`, `voc`, and `notation`. See [K10Plus Subjects] on how to obtain this database file.
 
 2. (optional) Create a configuration file `.env` to change certain config options. Here are the default values:
 

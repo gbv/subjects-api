@@ -1,0 +1,42 @@
+{
+  "name": "occurrences-api",
+  "version": "0.0.1",
+  "description": "API to provide co-occurrences based on the K10plus catalog.",
+  "main": "src/index.js",
+  "type": "module",
+  "author": "Stefan Peters <stefan.peters@gbv.de>",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -w .env -w src/ src/index.js",
+    "lint-staged": "lint-staged"
+  },
+  "lint-staged": {
+    "**/*.js": [
+      "eslint --fix"
+    ],
+    "**/.*.js": [
+      "eslint --fix"
+    ],
+    "**/*.cjs": [
+      "eslint --fix"
+    ],
+    "**/.*.cjs": [
+      "eslint --fix"
+    ]
+  },
+  "pre-commit": "lint-staged",
+  "dependencies": {
+    "better-sqlite3": "^7.6.2",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "jskos-tools": "^1.0.26",
+    "nodemon": "^2.0.19"
+  },
+  "devDependencies": {
+    "eslint": "^8.19.0",
+    "eslint-config-gbv": "^1.0.3",
+    "lint-staged": "^13.0.3",
+    "pre-commit": "^1.2.2"
+  }
+}

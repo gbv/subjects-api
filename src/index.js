@@ -3,6 +3,15 @@ import { db, config, schemes } from "./config.js"
 import express from "express"
 import jskos from "jskos-tools"
 
+// Value for `database` key for returned occurrences
+const database = {
+  uri: "http://uri.gbv.de/database/gvk",
+  prefLabel: {
+    en: "GBV Union Catalogue (GVK)",
+    de: "Gemeinsamer Verbundkatalog (GVK)",
+  },
+}
+
 async function createServer() {
   const app = express()
   app.set("json spaces", 2)
@@ -40,8 +49,7 @@ async function createServer() {
     if (otherScheme === undefined) {
       const result = await db.prepare("SELECT count(*) AS freq FROM subjects WHERE voc = ? and notation = ?").get([scheme._key, scheme.notationFromUri(member)])
       res.json([{
-        // TODO
-        database: { uri: "http://uri.gbv.de/database/gvk" },
+        database,
         memberSet: [
           {
             uri: member,
@@ -49,6 +57,7 @@ async function createServer() {
           },
         ],
         count: parseInt(result.freq),
+        // TODO: url
       }])
     } else {
       const result = await db.prepare(`SELECT b.voc, b.notation, count(*) AS freq FROM subjects AS b JOIN (SELECT ppn FROM subjects WHERE voc = ? AND notation = ?) a ON a.ppn = b.ppn WHERE b.voc ${otherScheme ? "=" : "!="} ? GROUP BY b.voc, b.notation ORDER BY freq DESC LIMIT 10;`).all([scheme._key, scheme.notationFromUri(member), otherScheme ? otherScheme._key : scheme._key])
@@ -61,8 +70,7 @@ async function createServer() {
           }
         }
         const entry = {
-          // TODO
-          database: { uri: "http://uri.gbv.de/database/gvk" },
+          database,
           memberSet: [
             {
               uri: member,
@@ -74,8 +82,7 @@ async function createServer() {
             },
           ],
           count: parseInt(row.freq),
-          // TODO
-          // url: "https://gso.gbv.de/DB=2.1/CMD?ACT=SRCHA&IKT=1016&SRT=YOP&TRM=bkl+08.22",
+          // TODO: url
         }
         return entry
       }).filter(Boolean))

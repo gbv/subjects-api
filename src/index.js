@@ -34,6 +34,7 @@ async function createServer() {
   // Default route
   app.get("/", async (req, res) => {
     const member = req.query.member
+    const threshold = parseInt(req.query.threshold) || 0
     const scheme = schemes.find(s => {
       return s.notationFromUri(member)
     })
@@ -64,7 +65,7 @@ async function createServer() {
         // TODO: url
       }])
     } else {
-      const result = await db.prepare(`SELECT b.voc, b.notation, count(*) AS freq FROM subjects AS b JOIN (SELECT ppn FROM subjects WHERE voc = ? AND notation = ?) a ON a.ppn = b.ppn WHERE b.voc ${otherScheme ? "=" : "!="} ? GROUP BY b.voc, b.notation ORDER BY freq DESC LIMIT 10;`).all([scheme._key, scheme.notationFromUri(member), otherScheme ? otherScheme._key : scheme._key])
+      const result = await db.prepare(`SELECT b.voc, b.notation, count(*) AS freq FROM subjects AS b JOIN (SELECT ppn FROM subjects WHERE voc = ? AND notation = ?) a ON a.ppn = b.ppn WHERE b.voc ${otherScheme ? "=" : "!="} ? GROUP BY b.voc, b.notation HAVING count(*) >= ? ORDER BY freq DESC LIMIT 10;`).all([scheme._key, scheme.notationFromUri(member), otherScheme ? otherScheme._key : scheme._key, threshold])
       res.json(result.map(row => {
         let targetScheme = otherScheme
         if (!targetScheme) {

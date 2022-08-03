@@ -59,6 +59,7 @@ npm run start
 
 - `member` (required) - URI of a concept from supported vocabularies
 - `scheme` (optional) - URI of a target concept scheme (when given, co-occurrences are returned; when value `*` is given, all supported target schemes are used)
+- `threshold` (optional) - a minimum threshold for the frequency of co-occurrences
 
 Returns a (possibly empty) array of [JSKOS Concept Occurrences](https://gbv.github.io/jskos/jskos.html#concept-occurrences).
 

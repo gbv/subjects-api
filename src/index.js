@@ -45,6 +45,10 @@ async function createServer() {
       otherScheme = null
     } else if (req.query.scheme) {
       otherScheme = schemes.find(s => jskos.compare(s, { uri: req.query.scheme }))
+      // If scheme is not found or not supported, return empty result
+      if (!otherScheme) {
+        return res.json([])
+      }
     }
     if (otherScheme === undefined) {
       const result = await db.prepare("SELECT count(*) AS freq FROM subjects WHERE voc = ? and notation = ?").get([scheme._key, scheme.notationFromUri(member)])

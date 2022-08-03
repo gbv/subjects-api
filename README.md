@@ -7,13 +7,13 @@
 
 > API to provide co-occurrences based on the K10plus catalog.
 
-## Table of Contents
+## Table of Contents <!-- omit in toc -->
 
 - [Install](#install)
   - [Configuration](#configuration)
 - [Usage](#usage)
 - [API](#api)
-  - [GET /](#get)
+  - [GET /](#get-)
   - [GET /voc](#get-voc)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
@@ -57,8 +57,8 @@ npm run start
 
 **Query parameters:**
 
-- `member` URI of a concept from supported vocabularies
-- `scheme` which other set to `*` by default
+- `member` (required) - URI of a concept from supported vocabularies
+- `scheme` (optional) - URI of a target concept scheme (when given, co-occurrences are returned; when value `*` is given, all supported target schemes are used)
 
 Returns a (possibly empty) array of [JSKOS Concept Occurrences](https://gbv.github.io/jskos/jskos.html#concept-occurrences).
 

@@ -19,5 +19,15 @@
     "namespace": "http://rvk.uni-regensburg.de/nt/",
     "notationPattern": "(LD,)?[A-Z]([A-Z]( [0-9]+([a-z]|\\.[0-9]+)?( [A-Z][0-9]*)?)?)?( - [A-Z]([A-Z]( [0-9]+([a-z]|\\.[0-9]+)?( [A-Z][0-9]*)?)?)?)?",
     "_key": "rvk"
+  },
+  {
+    "uri": "http://bartoc.org/en/node/241",
+    "identifier": [
+      "http://www.wikidata.org/entity/Q48460",
+      "http://dewey.info/scheme/edition/e23/"
+    ],
+    "notationPattern": "[0-9][0-9]?|[0-9]{3}(-[0-9]{3})?|[0-9]{3}\\.[0-9]+(-[0-9]{3}\\.[0-9]+)?|[1-9][A-Z]?--[0-9]+|[1-9][A-Z]?--[0-9]+(-[1-9][A-Z]?--[0-9]+)?(:[0-9]+)?",
+    "uriPattern": "http://dewey.info/class/(.+)/e23/",
+    "_key": "ddc"
   }
 ]

@@ -13,8 +13,8 @@
   - [Configuration](#configuration)
 - [Usage](#usage)
 - [API](#api)
-  - [GET /](#get-)
-  - [GET /voc](#get-voc)
+  - [GET /api](#get-api)
+  - [GET /api/voc](#get-apivoc)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
   - [Publish](#publish)
@@ -53,7 +53,7 @@ npm run start
 
 ## API
 
-### GET /
+### GET /api
 
 **Query parameters:**
 
@@ -63,7 +63,7 @@ npm run start
 
 Returns a (possibly empty) array of [JSKOS Concept Occurrences](https://gbv.github.io/jskos/jskos.html#concept-occurrences).
 
-### GET /voc
+### GET /api/voc
 
 Returns an array of supported vocabularies as [JSKOS Concept Schemes](https://gbv.github.io/jskos/jskos.html#concept-schemes).
 

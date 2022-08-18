@@ -16,6 +16,11 @@ async function createServer() {
   const app = express()
   app.set("json spaces", 2)
 
+  // Configure view engine to render EJS templates.
+  app.set("views", "./views")
+  app.set("view engine", "ejs")
+  app.use(express.static("public"))
+
   // Headers
   app.use((req, res, next) => {
     if (req.headers.origin) {
@@ -31,8 +36,16 @@ async function createServer() {
     next()
   })
 
-  // Default route
-  app.get("/", async (req, res) => {
+  // Root path for static page
+  app.get("/", (req, res) => {
+    res.setHeader("Content-Type", "text/html")
+    res.render("index", {
+      config,
+    })
+  })
+
+  // API route
+  app.get("/api", async (req, res) => {
     const member = req.query.member
     const threshold = parseInt(req.query.threshold) || 0
     const scheme = schemes.find(s => {
@@ -95,7 +108,7 @@ async function createServer() {
   })
 
   // Supported vocabularies
-  app.get("/voc", async (req, res) => {
+  app.get("/api/voc", async (req, res) => {
     res.json(schemes)
   })
 

@@ -7,7 +7,7 @@
 
 > API to provide co-occurrences based on the K10plus catalog.
 
-## Table of Contents <!-- omit in toc -->
+## Table of Contents
 
 - [Install](#install)
   - [Configuration](#configuration)

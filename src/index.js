@@ -5,10 +5,10 @@ import jskos from "jskos-tools"
 
 // Value for `database` key for returned occurrences
 const database = {
-  uri: "http://uri.gbv.de/database/gvk",
+  uri: "http://uri.gbv.de/database/opac-de-627",
   prefLabel: {
-    en: "GBV Union Catalogue (GVK)",
-    de: "Gemeinsamer Verbundkatalog (GVK)",
+    en: "K10plus Union Catalogue",
+    de: "K10plus-Verbundkatalog",
   },
 }
 
@@ -79,7 +79,7 @@ async function createServer() {
         ],
         count: parseInt(result.freq),
       }
-      const link = links.find(({fromScheme}) => scheme.uri === fromScheme.uri)
+      const link = links.find(l => l.database.uri === database.uri && l.fromScheme.uri === scheme.uri)
       if (link) {
         // FIXME: We expect template to only use '{notation}' but it may not do so
         occurrence.url = link.template.replace("{notation}",encodeURI(notation))

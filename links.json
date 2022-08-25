@@ -1,6 +1,6 @@
 [
   {
-    "fromScheme": { "_key": "gnd", "uri": "" },
+    "fromScheme": { "_key": "gnd", "uri": "http://bartoc.org/en/node/430" },
     "database": { "uri": "http://uri.gbv.de/database/opac-de-627" },
     "template": "https://opac.k10plus.de/DB=2.299/CMD?ACT=SRCHA&IKT=8533&TRM=gnd+{notation}"
   },

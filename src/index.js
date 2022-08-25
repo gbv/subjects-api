@@ -1,4 +1,4 @@
-import { db, config, schemes } from "./config.js"
+import { db, config, schemes, links } from "./config.js"
 
 import express from "express"
 import jskos from "jskos-tools"
@@ -65,19 +65,28 @@ async function createServer() {
       }
     }
     if (otherScheme === undefined) {
-      const result = await db.prepare("SELECT count(*) AS freq FROM subjects WHERE voc = ? and notation = ?").get([scheme._key, scheme.notationFromUri(member)])
-      res.json([{
+      // occurrences
+      const notation = scheme.notationFromUri(member)
+      const result = await db.prepare("SELECT count(*) AS freq FROM subjects WHERE voc = ? and notation = ?").get([scheme._key, notation])
+      const occurrence = {
         database,
         memberSet: [
           {
             uri: member,
+            notation: [notation],
             inScheme: [{ uri: scheme.uri }],
           },
         ],
         count: parseInt(result.freq),
-        // TODO: url
-      }])
+      }
+      const link = links.find(({fromScheme}) => scheme.uri === fromScheme.uri)
+      if (link) {
+        // FIXME: We expect template to only use '{notation}' but it may not do so
+        occurrence.url = link.template.replace("{notation}",encodeURI(notation))
+      }
+      res.json([occurrence])
     } else {
+      // co-occurrences
       const result = await db.prepare(`SELECT b.voc, b.notation, count(*) AS freq FROM subjects AS b JOIN (SELECT ppn FROM subjects WHERE voc = ? AND notation = ?) a ON a.ppn = b.ppn WHERE b.voc ${otherScheme ? "=" : "!="} ? GROUP BY b.voc, b.notation HAVING count(*) >= ? ORDER BY freq DESC LIMIT 10;`).all([scheme._key, scheme.notationFromUri(member), otherScheme ? otherScheme._key : scheme._key, threshold])
       res.json(result.map(row => {
         let targetScheme = otherScheme

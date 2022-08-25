@@ -41,6 +41,7 @@ npm i
 PORT=3141
 DATABASE=./subjects.db
 SCHEMES=./schemes.json
+LINKS=./links.json
 ```
 
 3. (optional) All vocabularies supported in [K10Plus Subjects] are preconfigured. To override those vocabularies, set the `SCHEMES` config option to a JSON file provided by you.

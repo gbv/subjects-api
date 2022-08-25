@@ -5,7 +5,9 @@
 <!-- [![Uptime Robot status](https://img.shields.io/uptimerobot/status/m780815088-08758d5c5193e7b25236cfd7.svg?label=%2Fapi%2F)](https://stats.uptimerobot.com/qZQx1iYZY/780815088) -->
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
-> API to provide co-occurrences based on the K10plus catalog.
+> API to provide (co-)occurrences based on the K10plus catalog.
+
+An occurrence gives information about how often a concept (or combination of concepts for co-occurrences) is used in a database.
 
 ## Table of Contents
 
@@ -17,7 +19,6 @@
   - [GET /api/voc](#get-apivoc)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
-  - [Publish](#publish)
 - [License](#license)
 
 ## Install
@@ -56,13 +57,13 @@ npm run start
 
 ### GET /api
 
+Returns a (possibly empty) array of [JSKOS Concept Occurrences](https://gbv.github.io/jskos/jskos.html#concept-occurrences). Existence of query parameter `scheme` defines whether simple occurrences or co-occurrences are returned. Simple occurrences also contain deep links into K10plus catalog for selected vocabularies.
+
 **Query parameters:**
 
 - `member` (required) - URI of a concept from supported vocabularies
 - `scheme` (optional) - URI of a target concept scheme (when given, co-occurrences are returned; when value `*` is given, all supported target schemes are used)
 - `threshold` (optional) - a minimum threshold for the frequency of co-occurrences
-
-Returns a (possibly empty) array of [JSKOS Concept Occurrences](https://gbv.github.io/jskos/jskos.html#concept-occurrences).
 
 ### GET /api/voc
 
@@ -78,15 +79,6 @@ Returns an array of supported vocabularies as [JSKOS Concept Schemes](https://gb
 PRs accepted against the `dev` branch.
 
 Small note: If editing the README, please conform to the [standard-readme](https://github.com/RichardLitt/standard-readme) specification.
-
-### Publish
-**For maintainers only**
-
-Never work on the master branch directly. Always make changes on `dev` (ideally as PRs) and then run the release script:
-
-```bash
-npm run release:patch # or minor or major
-```
 
 ## License
 

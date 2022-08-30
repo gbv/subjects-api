@@ -15,7 +15,7 @@ const database = {
 async function createServer() {
 
   // this will likely warm up the backend cache as well
-  const { recCount, occCount, vocCount } = await backend.stats()
+  const { recCount, occCount, vocCount } = await backend.metadata()
   console.log(`Backend contains ${occCount} occurrences from ${recCount} records with ${vocCount} vocabularies.`)
 
   const app = express()

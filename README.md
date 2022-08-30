@@ -33,10 +33,7 @@ npm i
 
 ### Configuration
 
-<!-- TODO: Make it easier to provide the database file. -->
-1. (required) You need an SQLite database file under `subjects.db` which contains PPNs and their cataloging from the K10plus catalog. The database is expected to include a table `subjects` with columns `ppn`, `voc`, and `notation`. See [K10Plus Subjects] on how to obtain this database file.
-
-2. (optional) Create a configuration file `.env` to change certain config options. Here are the default values:
+1. (optional) Create a configuration file `.env` to change certain config options. Here are the default values:
 
 ```env
 PORT=3141
@@ -45,7 +42,14 @@ SCHEMES=./schemes.json
 LINKS=./links.json
 ```
 
-3. (optional) All vocabularies supported in [K10Plus Subjects] are preconfigured. To override those vocabularies, set the `SCHEMES` config option to a JSON file provided by you.
+2. (optional) All vocabularies supported in [K10Plus Subjects] are preconfigured. To override those vocabularies, set the `SCHEMES` config option to a JSON file provided by you.
+
+3. (required) Fill backend database with subject indexing data from K10plus catalog. This requires to start the application once to create SQLite database file under `subjects.db`. Then download data from <https://doi.org/10.5281/zenodo.7016625> (given as tabulator separated file table with columns PPN, vocabulary key, and notation) and import into SQLite file:
+
+  ~~~~
+  URL=$(curl -sL "https://zenodo.org/api/records/7016625" | jq -r '.files[]|select(.key|endswith(".tsv.gz"))|.links.self')
+  curl -sL $URL | zcat | sqlite3 subjects.db -cmd ".mode tabs" ".import /dev/stdin subjects"
+  ~~~~
 
 ## Usage
 

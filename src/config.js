@@ -13,10 +13,7 @@ import fs from "fs"
 export const schemes = JSON.parse(fs.readFileSync(config.schemesFile)).map(scheme => new jskos.ConceptScheme(scheme))
 export const links = JSON.parse(fs.readFileSync(config.linksFile))
 
-import Database from "better-sqlite3"
-export const db = new Database(config.database, {
-  readonly: true,
-  fileMustExist: true,
-})
+import SQLiteBackend from "./backend/sqlite.js"
+export const backend = new SQLiteBackend(config)
 
-console.log(`Configured ${schemes.length} vocabularies from ${config.schemesFile}. Loaded datatabase from ${config.database}.`)
+console.log(`Configured ${schemes.length} vocabularies from ${config.schemesFile}. Using ${backend.name}.`)

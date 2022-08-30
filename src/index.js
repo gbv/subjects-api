@@ -1,4 +1,4 @@
-import { db, config, schemes, links } from "./config.js"
+import { backend, config, schemes, links } from "./config.js"
 
 import express from "express"
 import jskos from "jskos-tools"
@@ -64,10 +64,9 @@ async function createServer() {
         return res.json([])
       }
     }
+    const notation = scheme.notationFromUri(member)
     if (otherScheme === undefined) {
-      // occurrences
-      const notation = scheme.notationFromUri(member)
-      const result = await db.prepare("SELECT count(*) AS freq FROM subjects WHERE voc = ? and notation = ?").get([scheme._key, notation])
+      const result = await backend.occurrences({ scheme, notation })
       const occurrence = {
         database,
         memberSet: [
@@ -86,8 +85,7 @@ async function createServer() {
       }
       res.json([occurrence])
     } else {
-      // co-occurrences
-      const result = await db.prepare(`SELECT b.voc, b.notation, count(*) AS freq FROM subjects AS b JOIN (SELECT ppn FROM subjects WHERE voc = ? AND notation = ?) a ON a.ppn = b.ppn WHERE b.voc ${otherScheme ? "=" : "!="} ? GROUP BY b.voc, b.notation HAVING count(*) >= ? ORDER BY freq DESC LIMIT 10;`).all([scheme._key, scheme.notationFromUri(member), otherScheme ? otherScheme._key : scheme._key, threshold])
+      const result = await backend.coOcurrences({scheme, notation, otherScheme, threshold})
       res.json(result.map(row => {
         let targetScheme = otherScheme
         if (!targetScheme) {

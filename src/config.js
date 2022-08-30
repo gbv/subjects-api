@@ -4,7 +4,7 @@ dotenv.config()
 export const config = {
   port: process.env.PORT || 3141,
   database: process.env.DATABASE || "./subjects.db",
-  schemesFile: process.env.SCHEMES || "./schemes.json",
+  schemesFile: process.env.SCHEMES || "./vocabularies.json",
   linksFile: process.env.LINKS || "./links.json",
 }
 

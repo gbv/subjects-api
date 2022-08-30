@@ -94,7 +94,7 @@ async function createServer() {
       res.json(result.map(row => {
         let targetScheme = otherScheme
         if (!targetScheme) {
-          targetScheme = schemes.find(s => s._key === row.voc)
+          targetScheme = schemes.find(s => s.VOC === row.voc)
           if (!targetScheme) {
             return null
           }

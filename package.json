@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon -w .env -w schemes.json -w src/ src/index.js",
+    "start": "nodemon -w .env -w vocabularies.json -w src/ src/index.js",
     "fix": "eslint --fix \"**/*.{js,cjs}\"",
     "lint-staged": "lint-staged && standard-readme"
   },

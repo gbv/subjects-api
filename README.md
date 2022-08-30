@@ -38,7 +38,7 @@ npm i
 ```env
 PORT=3141
 DATABASE=./subjects.db
-SCHEMES=./schemes.json
+SCHEMES=./vocabularies.json
 LINKS=./links.json
 ```
 

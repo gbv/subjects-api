@@ -17,3 +17,4 @@ import SQLiteBackend from "./backend/sqlite.js"
 export const backend = new SQLiteBackend(config)
 
 console.log(`Configured ${schemes.length} vocabularies from ${config.schemesFile}. Using ${backend.name}.`)
+

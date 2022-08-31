@@ -33,7 +33,7 @@ CREATE TABLE metadata (
     return this.db.prepare("SELECT count(*) AS freq FROM subjects WHERE voc = ? and notation = ?").get([scheme.VOC, notation])
   }
 
-  async coOcurrences({scheme, notation, otherScheme, threshold}) {
+  async coOccurrences({scheme, notation, otherScheme, threshold}) {
     return this.db.prepare(`SELECT b.voc, b.notation, count(*) AS freq FROM subjects AS b JOIN (SELECT ppn FROM subjects WHERE voc = ? AND notation = ?) a ON a.ppn = b.ppn WHERE b.voc ${otherScheme ? "=" : "!="} ? GROUP BY b.voc, b.notation HAVING count(*) >= ? ORDER BY freq DESC LIMIT 10;`).all([scheme.VOC, notation, otherScheme ? otherScheme.VOC : scheme.VOC, threshold])
   }
 

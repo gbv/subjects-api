@@ -90,7 +90,7 @@ async function createServer() {
       }
       res.json([occurrence])
     } else {
-      const result = await backend.coOcurrences({scheme, notation, otherScheme, threshold})
+      const result = await backend.coOccurrences({scheme, notation, otherScheme, threshold})
       res.json(result.map(row => {
         let targetScheme = otherScheme
         if (!targetScheme) {

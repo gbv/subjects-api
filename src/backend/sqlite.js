@@ -43,7 +43,7 @@ CREATE TABLE metadata (
     // NOTE: we may use transaction here unless bulk import
     this.db.prepare("DELETE FROM subjects WHERE ppn = ?").run(ppn)
     for (const row of rows) {
-      insert({ ...row, ppn })
+      insert.run({ ...row, ppn })
     }
   }
 

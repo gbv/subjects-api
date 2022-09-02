@@ -25,7 +25,8 @@ CREATE TABLE metadata (
 );
 `)
     }
-    this.db = new Database(file, { readonly: true })
+    this.db = new Database(file)
+    this.db.pragma("journal_mode = WAL")
     this.name = `SQLite database ${file}`
   }
 
@@ -45,6 +46,54 @@ CREATE TABLE metadata (
     for (const row of rows) {
       insert.run({ ...row, ppn })
     }
+  }
+
+  async batchImport(data) {
+    // Drop indexes to recreate later
+    try {
+      this.db.exec("DROP INDEX idx_notation;")
+      this.db.exec("DROP INDEX idx_ppn;")
+    } catch (error) {
+      // Ignore (can occur when previous batch import was canceled and indexes were already dropped)
+    }
+    this.db.exec("DELETE FROM subjects;")
+    const insert = this.db.prepare("INSERT INTO subjects VALUES (@ppn, @voc, @notation)")
+    const insertMany = this.db.transaction((data) => {
+      for (const row of data) insert.run(row)
+    })
+    return new Promise((resolve, reject) => {
+      let results = []
+      let inserted = 0
+      const insertResults = () => {
+        insertMany(results)
+        inserted += results.length
+        results = []
+        console.log(`${inserted} rows inserted.`)
+      }
+      if (Array.isArray(data)) {
+        reject("Error in SQLite batchImport: Array import not yet supported.")
+      } else if (data.on) {
+        // Assume a stream and wrap inserts into a biiig transaction
+        this.db.transaction(() => {
+          data
+            .on("data", (row) => {
+              results.push(row)
+              if (results.length >= 10000000) {
+                insertResults()
+              }
+            })
+            .on("end", () => {
+              insertResults()
+              // Recreate indexes
+              this.db.exec("CREATE INDEX idx_notation on subjects (notation);")
+              this.db.exec("CREATE INDEX idx_ppn on subjects (ppn);")
+              resolve()
+            })
+        })()
+      } else {
+        reject("Error in SQLite batchImport: Unknown or unsupported data format")
+      }
+    })
   }
 
   async metadata() {

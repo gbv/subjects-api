@@ -96,5 +96,7 @@ import { backend } from "../src/config.js"
         })
     })
   }
-  // TODO: Write modified time to metadata table.
+  if (modified) {
+    await backend.updateMetadata({ key: "modified", value: modified })
+  }
 })()

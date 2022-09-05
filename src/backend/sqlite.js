@@ -121,4 +121,12 @@ CREATE TABLE metadata (
 
     return { ...metadata, recCount, occCount, vocCount }
   }
+
+  async updateMetadata(data) {
+    if (!Array.isArray(data)) {
+      data = [data]
+    }
+    const update = this.db.prepare("INSERT INTO metadata VALUES (@key, @value) ON CONFLICT (key) DO UPDATE SET value = @value")
+    data.forEach(row => update.run(row))
+  }
 }

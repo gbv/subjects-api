@@ -39,13 +39,29 @@ CREATE TABLE metadata (
   }
 
   async updateRecord(ppn, rows=[]) {
+    const deleteAll = this.db.prepare("DELETE FROM subjects WHERE ppn = ?")
+    const deleteOne = this.db.prepare("DELETE FROM subjects WHERE ppn = @ppn AND voc = @voc")
     const insert = this.db.prepare("INSERT INTO subjects (ppn, voc, notation) VALUES (@ppn, @voc, @notation)")
 
-    // NOTE: we may use transaction here unless bulk import
-    this.db.prepare("DELETE FROM subjects WHERE ppn = ?").run(ppn)
-    for (const row of rows) {
-      insert.run({ ...row, ppn })
-    }
+    // Sort rows (deletion first)
+    rows.sort((a, b) => {
+      if (!a.notation && b.notation || !a.voc && b.voc) {
+        return -1
+      }
+      return 1
+    })
+
+    this.db.transaction(() => {
+      for (const row of rows) {
+        if (!row.voc) {
+          deleteAll.run(ppn)
+        } else if (!row.notation) {
+          deleteOne.run({ ...row, ppn })
+        } else {
+          insert.run({ ...row, ppn })
+        }
+      }
+    })()
   }
 
   async batchImport(data) {

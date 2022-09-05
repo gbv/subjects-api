@@ -51,10 +51,6 @@ if (file && !modified) {
   modified = fileStats.mtime.toISOString().slice(0, 10)
 }
 
-if (!full) {
-  console.error("Error: Partial import not yet supported.")
-}
-
 console.log()
 console.log(`${full ? "Full" : "Partial"} import with file ${file}, modified ${modified}.`)
 
@@ -68,10 +64,37 @@ import { backend } from "../src/config.js"
       headers: ["ppn", "voc", "notation"],
       quote: "",
     }))
-  try {
-    await backend.batchImport(stream)
-  } catch (error) {
-    console.error(error)
+
+  if (full) {
+    try {
+      await backend.batchImport(stream)
+    } catch (error) {
+      console.error(error)
+    }
+  } else {
+    // Partial import
+    await new Promise(resolve => {
+      let ppn
+      let rows = []
+      stream
+        .on("data", row => {
+          if (row.ppn === ppn) {
+            rows.push(row)
+          } else {
+            if (ppn) {
+              backend.updateRecord(ppn, rows)
+            }
+            ppn = row.ppn
+            rows = [row]
+          }
+        })
+        .on("end", () => {
+          if (ppn) {
+            backend.updateRecord(ppn, rows)
+          }
+          resolve()
+        })
+    })
   }
   // TODO: Write modified time to metadata table.
 })()

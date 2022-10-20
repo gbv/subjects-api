@@ -99,4 +99,5 @@ import { backend } from "../src/config.js"
   if (modified) {
     await backend.updateMetadata({ key: "modified", value: modified })
   }
+  await backend.disconnect()
 })()

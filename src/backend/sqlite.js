@@ -30,6 +30,10 @@ CREATE TABLE metadata (
     this.name = `SQLite database ${file}`
   }
 
+  async disconnect() {
+    this.db.close()
+  }
+
   async occurrences({scheme, notation}) {
     return this.db.prepare("SELECT count(*) AS freq FROM subjects WHERE voc = ? and notation = ?").get([scheme.VOC, notation])
   }

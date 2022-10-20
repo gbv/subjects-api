@@ -100,6 +100,10 @@ async function createServer() {
             return null
           }
         }
+        const targetConceptUri = targetScheme.uriFromNotation(row.notation)
+        if (!targetConceptUri) {
+          return null
+        }
         const entry = {
           database,
           memberSet: [

@@ -116,14 +116,18 @@ CREATE TABLE metadata (
     })
   }
 
-  async metadata() {
-    const { occCount } = await this.db.prepare("SELECT COUNT(*) AS occCount FROM subjects").get()
-    const { recCount } = await this.db.prepare("SELECT COUNT(DISTINCT ppn) AS recCount FROM subjects").get()
-    const { vocCount } = await this.db.prepare("SELECT COUNT(DISTINCT voc) AS vocCount FROM subjects").get()
+  async metadata({ counts = true } = {}) {
+    let result = {}
+    if (counts) {
+      const { occCount } = await this.db.prepare("SELECT COUNT(*) AS occCount FROM subjects").get()
+      const { recCount } = await this.db.prepare("SELECT COUNT(DISTINCT ppn) AS recCount FROM subjects").get()
+      const { vocCount } = await this.db.prepare("SELECT COUNT(DISTINCT voc) AS vocCount FROM subjects").get()
+      result = { occCount, recCount, vocCount }
+    }
 
     const metadata = Object.fromEntries(await this.db.prepare("SELECT key, value FROM metadata").all().map(({key,value}) => [key,value]))
 
-    return { ...metadata, recCount, occCount, vocCount }
+    return { ...metadata, ...result }
   }
 
   async updateMetadata(data) {

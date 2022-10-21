@@ -179,13 +179,18 @@ export default class PostgreSQLBackend {
     }
   }
 
-  async metadata() {
+  async metadata({ counts = true } = {}) {
     const client = await this.db.connect()
     try {
-      const { occcount } = (await client.query("SELECT COUNT(*) AS occCount FROM subjects")).rows[0]
-      const { reccount } = (await client.query("SELECT COUNT(DISTINCT ppn) AS recCount FROM subjects")).rows[0]
-      const { voccount } = (await client.query("SELECT COUNT(DISTINCT voc) AS vocCount FROM subjects")).rows[0]
-      return { occCount: occcount, recCount: reccount, vocCount: voccount }
+      let result = {}
+      if (counts) {
+        const { occcount } = (await client.query("SELECT COUNT(*) AS occCount FROM subjects")).rows[0]
+        const { reccount } = (await client.query("SELECT COUNT(DISTINCT ppn) AS recCount FROM subjects")).rows[0]
+        const { voccount } = (await client.query("SELECT COUNT(DISTINCT voc) AS vocCount FROM subjects")).rows[0]
+        result = { occCount: occcount, recCount: reccount, vocCount: voccount }
+      }
+      const metadata = Object.fromEntries((await client.query("SELECT key, value FROM metadata")).rows.map(({key,value}) => [key,value]))
+      return { ...metadata, ...result }
     } catch (error) {
       console.log(error)
       return []

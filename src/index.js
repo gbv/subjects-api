@@ -70,6 +70,7 @@ async function createServer() {
         return res.json([])
       }
     }
+    const { modified } = await backend.metadata({ counts: false })
     const notation = scheme.notationFromUri(member)
     if (otherScheme === undefined) {
       const result = await backend.occurrences({ scheme, notation })
@@ -82,6 +83,7 @@ async function createServer() {
             inScheme: [{ uri: scheme.uri }],
           },
         ],
+        modified,
         count: parseInt(result.freq),
       }
       const link = links.find(l => l.database.uri === database.uri && l.fromScheme.uri === scheme.uri)
@@ -116,6 +118,7 @@ async function createServer() {
               inScheme: [{ uri: targetScheme.uri }],
             },
           ],
+          modified,
           count: parseInt(row.freq),
           // TODO: url
         }

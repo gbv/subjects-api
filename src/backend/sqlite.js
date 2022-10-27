@@ -4,7 +4,7 @@ import fs from "fs"
 export default class SQLiteBackend {
 
   // Establish connection to backend or throw error
-  constructor(config) {
+  async connect(config) {
     const file = config.database
     // create database file if not exist or throw an error
     if (!fs.existsSync(file)) {
@@ -66,6 +66,10 @@ CREATE TABLE metadata (
         }
       }
     })()
+  }
+
+  get batchImportRequiresCSV() {
+    return true
   }
 
   async batchImport(data) {

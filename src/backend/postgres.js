@@ -1,11 +1,13 @@
 
 import pg from "pg"
+import pgcs from "pg-copy-streams"
+const copyFrom = pgcs.from
 const { Pool } = pg
 
 export default class PostgreSQLBackend {
 
   // Establish connection to backend or throw error
-  constructor(config) {
+  async connect(config) {
     this.db = new Pool({
       user: "stefan" || config.user,
       password: "" || config.password,
@@ -16,31 +18,31 @@ export default class PostgreSQLBackend {
       connectionTimeoutMillis: 0,
     })
 
-    ;(async () => {
-      const client = await this.db.connect()
-      try {
-        const res = await client.query("SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';")
-        if (res.rowCount === 0) {
-          await client.query(`
-            CREATE TABLE subjects (
-              ppn TEXT NOT NULL,
-              voc TEXT NOT NULL,
-              notation TEXT NOT NULL
-            );
+    const client = await this.db.connect()
+    try {
+      const res = await client.query("SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';")
+      if (res.rowCount === 0) {
+        await client.query(`
+          CREATE TABLE subjects (
+            ppn TEXT NOT NULL,
+            voc TEXT NOT NULL,
+            notation TEXT
+          );
 
-            CREATE INDEX idx_notation on subjects (notation);
-            CREATE INDEX idx_ppn on subjects (ppn);
+          CREATE INDEX idx_notation on subjects (notation);
+          CREATE INDEX idx_ppn on subjects (ppn);
 
-            CREATE TABLE metadata (
-              key TEXT PRIMARY KEY,
-              value TEXT NOT NULL
-            );
-          `)
-        }
-      } finally {
-        client.release()
+          CREATE TABLE metadata (
+            key TEXT PRIMARY KEY,
+            value TEXT NOT NULL
+          );
+        `)
       }
-    })()
+    } catch (error) {
+      console.error(error)
+    } finally {
+      client.release()
+    }
     this.name = `PostgreSQL database ${config.database} (port ${config.port})`
   }
 
@@ -110,6 +112,10 @@ export default class PostgreSQLBackend {
     }
   }
 
+  get batchImportRequiresCSV() {
+    return false
+  }
+
   async batchImport(data) {
     const client = await this.db.connect()
 
@@ -123,48 +129,20 @@ export default class PostgreSQLBackend {
       console.timeEnd("drop indexes/data")
       // await client.query("BEGIN")
 
-      const bulkInsert = async (rows) => {
-        const keys = Object.keys(rows[0])
-        let valueStr = ""
-        let valueArray = []
-        let valueIndex = 1
-        for (let row of rows) {
-          if (valueStr) {
-            valueStr += ","
-          }
-          valueStr += "(" + keys.map((value, index) => `$${valueIndex + index}`) + ")"
-          valueArray = valueArray.concat(keys.map((value) => row[value]))
-          valueIndex += keys.length
-        }
-        await client.query(`INSERT INTO subjects (${keys.join(",")}) VALUES ${valueStr}`, valueArray)
-      }
+      console.time("importing data")
+      await new Promise((resolve, reject) => {
+        // TODO: Can we require data files to be UTF8 so that we don't need to add ENCODING 'SQL_ASCII'?
+        // Note: QUOTE E`\b` is a workaround because we don't want any quote character. See https://stackoverflow.com/a/20402913.
+        const stream = client.query(copyFrom("COPY subjects FROM STDIN DELIMITER E'\t' ENCODING 'SQL_ASCII' CSV QUOTE E'\b' NULL AS ''"))
+        data.on("error", reject)
+        stream.on("error", reject)
+        stream.on("finish", resolve)
+        data.pipe(stream)
+      })
+      console.timeEnd("importing data")
 
-      let rows = []
-      let inserted = 0
-      console.time("insert")
-
-      for await (const row of data) {
-        rows.push(row)
-        if (rows.length === 2000) {
-          inserted += rows.length
-          await bulkInsert(rows)
-          rows = []
-          if (inserted % 1000000 === 0) {
-            // await client.query("COMMIT")
-            console.timeEnd("insert")
-            console.log(inserted)
-            console.time("insert")
-            // await client.query("BEGIN")
-          }
-        }
-      }
-
-      inserted += rows.length
-      await bulkInsert(rows)
-      // await client.query("COMMIT")
-      console.timeEnd("insert")
-      console.log(inserted)
       // Recreate indexes
+      console.log("import complete, recreating indexes...")
       console.time("recreate indexes")
       await client.query("CREATE INDEX idx_notation on subjects (notation);")
       await client.query("CREATE INDEX idx_ppn on subjects (ppn);")

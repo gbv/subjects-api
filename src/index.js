@@ -1,4 +1,4 @@
-import { backend, config, schemes, links } from "./config.js"
+import { connect, config, schemes, links } from "./config.js"
 
 import express from "express"
 import jskos from "jskos-tools"
@@ -13,6 +13,8 @@ const database = {
 }
 
 async function createServer() {
+  // Connect to backend
+  const backend = await connect()
 
   // this will likely warm up the backend cache as well
   // TODO: This is very slow and delays startup by multiple minutes. Find a better solution.

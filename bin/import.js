@@ -55,19 +55,20 @@ console.log()
 console.log(`${full ? "Full" : "Partial"} import with file ${file}, modified ${modified}.`)
 
 import csv from "csv-parser"
-import { backend } from "../src/config.js"
+import { connect } from "../src/config.js"
 
 (async () => {
+  const backend = await connect()
   const stream = fs.createReadStream(file)
-    .pipe(csv({
-      separator: "\t",
-      headers: ["ppn", "voc", "notation"],
-      quote: "",
-    }))
+  const csvTransform = csv({
+    separator: "\t",
+    headers: ["ppn", "voc", "notation"],
+    quote: "",
+  })
 
   if (full) {
     try {
-      await backend.batchImport(stream)
+      await backend.batchImport(backend.batchImportRequiresCSV ? stream.pipe(csvTransform) : stream)
     } catch (error) {
       console.error(error)
     }
@@ -77,6 +78,7 @@ import { backend } from "../src/config.js"
       let ppn
       let rows = []
       stream
+        .pipe(csvTransform)
         .on("data", row => {
           if (row.ppn === ppn) {
             rows.push(row)

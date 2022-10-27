@@ -24,6 +24,11 @@ if (!backendClass) {
   process.exit(1)
 }
 
-export const backend = new backendClass(config)
-
-console.log(`Configured ${schemes.length} vocabularies from ${config.schemesFile}. Using ${backend.name}.`)
+export const backend = new backendClass()
+// Connect immediately, but clients will still need to await connect()
+const backendConnectPromise = backend.connect(config)
+export const connect = async () => {
+  await backendConnectPromise
+  console.log(`Configured ${schemes.length} vocabularies from ${config.schemesFile}. Using ${backend.name}.`)
+  return backend
+}

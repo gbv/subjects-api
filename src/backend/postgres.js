@@ -17,6 +17,12 @@ export default class PostgreSQLBackend {
       idleTimeoutMillis: 0,
       connectionTimeoutMillis: 0,
     })
+    this.db.on("connect", () => {
+      console.log("Connected to PostgreSQL database")
+    })
+    this.db.on("error", (error) => {
+      console.error("Lost connection to PostgreSQL database", error.message)
+    })
 
     let client
     try {

@@ -72,7 +72,13 @@ async function createServer() {
         return res.json([])
       }
     }
-    const { modified } = await backend.metadata({ counts: false })
+    let modified
+    try {
+      const metadata = await backend.metadata({ counts: false })
+      modified = metadata.modified
+    } catch (error) {
+      // ignore
+    }
     const notation = scheme.notationFromUri(member)
     if (otherScheme === undefined) {
       const result = await backend.occurrences({ scheme, notation })

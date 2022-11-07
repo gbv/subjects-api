@@ -180,9 +180,6 @@ export default class PostgreSQLBackend {
       }
       const metadata = Object.fromEntries((await client.query("SELECT key, value FROM metadata")).rows.map(({key,value}) => [key,value]))
       return { ...metadata, ...result }
-    } catch (error) {
-      console.log(error)
-      return []
     } finally {
       client && client.release()
     }

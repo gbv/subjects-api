@@ -134,6 +134,18 @@ async function createServer() {
     res.json(schemes)
   })
 
+  app.get("/status", async (req, res) => {
+    const status = {}
+    try {
+      const metadata = await backend.metadata({ counts: false })
+      status.metadata = metadata
+      status.ok = 1
+    } catch (error) {
+      status.ok = 0
+    }
+    res.json(status)
+  })
+
   return { app }
 }
 

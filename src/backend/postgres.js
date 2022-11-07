@@ -9,17 +9,18 @@ export default class PostgreSQLBackend {
   // Establish connection to backend or throw error
   async connect(config) {
     this.db = new Pool({
-      user: "stefan" || config.user,
-      password: "" || config.password,
-      host: "localhost" || config.host,
-      database: "subjects" || config.database,
-      port: 5432 || config.port,
+      user: config.db.user,
+      password: config.db.password || "",
+      host: config.db.host || "localhost",
+      database: config.db.database || "subjects",
+      port: config.db.port || 5432,
       idleTimeoutMillis: 0,
       connectionTimeoutMillis: 0,
     })
 
-    const client = await this.db.connect()
+    let client
     try {
+      client = await this.db.connect()
       const res = await client.query("SELECT * FROM pg_catalog.pg_tables WHERE schemaname != 'pg_catalog' AND schemaname != 'information_schema';")
       if (res.rowCount === 0) {
         await client.query(`
@@ -41,7 +42,7 @@ export default class PostgreSQLBackend {
     } catch (error) {
       console.error(error)
     } finally {
-      client.release()
+      client && client.release()
     }
     this.name = `PostgreSQL database ${config.database} (port ${config.port})`
   }
@@ -51,28 +52,30 @@ export default class PostgreSQLBackend {
   }
 
   async occurrences({scheme, notation}) {
-    const client = await this.db.connect()
+    let client
     try {
+      client = await this.db.connect()
       const results = await client.query("SELECT count(*) AS freq FROM subjects WHERE voc = $1 and notation = $2", [scheme.VOC, notation])
       return results.rows
     } catch (error) {
       console.log(error)
       return []
     } finally {
-      client.release()
+      client && client.release()
     }
   }
 
   async coOccurrences({scheme, notation, otherScheme, threshold}) {
-    const client = await this.db.connect()
+    let client
     try {
+      client = await this.db.connect()
       const results = await client.query(`SELECT b.voc, b.notation, count(*) AS freq FROM subjects AS b JOIN (SELECT ppn FROM subjects WHERE voc = $1 AND notation = $2) a ON a.ppn = b.ppn WHERE b.voc ${otherScheme ? "=" : "!="} $3 GROUP BY b.voc, b.notation HAVING count(*) >= $4 ORDER BY freq DESC LIMIT 10;`, [scheme.VOC, notation, otherScheme ? otherScheme.VOC : scheme.VOC, threshold])
       return results.rows
     } catch (error) {
       console.log(error)
       return []
     } finally {
-      client.release()
+      client && client.release()
     }
   }
 
@@ -89,8 +92,9 @@ export default class PostgreSQLBackend {
       return 1
     })
 
-    const client = await this.db.connect()
+    let client
     try {
+      client = await this.db.connect()
       await client.query("BEGIN")
 
       for (const row of rows) {
@@ -105,10 +109,10 @@ export default class PostgreSQLBackend {
 
       await client.query("COMMIT")
     } catch (e) {
-      await client.query("ROLLBACK")
+      client && await client.query("ROLLBACK")
       console.log(e)
     } finally {
-      client.release()
+      client && client.release()
     }
   }
 
@@ -117,9 +121,9 @@ export default class PostgreSQLBackend {
   }
 
   async batchImport(data) {
-    const client = await this.db.connect()
-
+    let client
     try {
+      client = await this.db.connect()
 
       // Drop indexes to recreate later
       console.time("drop indexes/data")
@@ -153,13 +157,14 @@ export default class PostgreSQLBackend {
       console.log(error)
       // await client.query("ROLLBACK")
     } finally {
-      client.release()
+      client && client.release()
     }
   }
 
   async metadata({ counts = true } = {}) {
-    const client = await this.db.connect()
+    let client
     try {
+      client = await this.db.connect()
       let result = {}
       if (counts) {
         const { occcount } = (await client.query("SELECT COUNT(*) AS occCount FROM subjects")).rows[0]
@@ -173,7 +178,7 @@ export default class PostgreSQLBackend {
       console.log(error)
       return []
     } finally {
-      client.release()
+      client && client.release()
     }
   }
 
@@ -181,8 +186,9 @@ export default class PostgreSQLBackend {
     if (!Array.isArray(data)) {
       data = [data]
     }
-    const client = await this.db.connect()
+    let client
     try {
+      client = await this.db.connect()
       const updateQuery = "INSERT INTO metadata VALUES ($1, $2) ON CONFLICT (key) DO UPDATE SET value = $2"
       for (const row of data) {
         await client.query(updateQuery, [row.key, row.value])
@@ -190,7 +196,7 @@ export default class PostgreSQLBackend {
     } catch (error) {
       console.log(error)
     } finally {
-      client.release()
+      client && client.release()
     }
   }
 }

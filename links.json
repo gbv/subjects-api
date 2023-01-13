@@ -2,7 +2,7 @@
   {
     "fromScheme": { "VOC": "gnd", "uri": "http://bartoc.org/en/node/430" },
     "database": { "uri": "http://uri.gbv.de/database/opac-de-627" },
-    "template": "https://opac.k10plus.de/DB=2.299/CMD?ACT=SRCHA&IKT=8533&TRM=gnd+{notation}"
+    "template": "https://opac.k10plus.de/DB=2.299/CLK?IKT=8549&TRM={notation}"
   },
   {
     "fromScheme": { "VOC": "bk", "uri": "http://bartoc.org/en/node/18785" },
@@ -12,7 +12,7 @@
   {
     "fromScheme": { "VOC": "rvk", "uri": "http://bartoc.org/en/node/533" },
     "database": { "uri": "http://uri.gbv.de/database/opac-de-627" },
-    "template": "https://opac.k10plus.de/DB=2.299/CLK?IKT=3002&NOABS=Y&TRM={notation}"
+    "template": "https://opac.k10plus.de/DB=2.299/CLK?IKT=3002&TRM={notation}"
   },
   {
     "fromScheme": { "VOC": "ddc", "uri": "http://bartoc.org/en/node/241" },

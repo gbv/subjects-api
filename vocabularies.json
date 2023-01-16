@@ -87,6 +87,7 @@
     "PICA": "045F",
     "SRC": "^[ekvA](.+)",
     "VOC": "ddc",
+    "IKT": "3011",
     "identifier": [
       "http://www.wikidata.org/entity/Q48460",
       "http://dewey.info/scheme/edition/e23/"
@@ -111,6 +112,7 @@
     "PICA": "044K",
     "SRC": "^A(.+)",
     "VOC": "gnd",
+    "IKT": "8549",
     "namespace": "https://d-nb.info/gnd/",
     "notationPattern": "[0-9X]+(-[0-9X])?",
     "prefLabel": { "de": "Gemeinsame Normdatei", "en": "Integrated Authority File" },
@@ -121,6 +123,7 @@
     "PICA": "044L",
     "SRC": "^[kvA](.+)",
     "VOC": "gnd",
+    "IKT": "8549",
     "namespace": "https://d-nb.info/gnd/",
     "notationPattern": "[0-9X]+(-[0-9X])?",
     "prefLabel": { "de": "Gemeinsame Normdatei", "en": "Integrated Authority File" },
@@ -131,6 +134,7 @@
     "PICA": "045Q/01",
     "SRC": "^A(.+)",
     "VOC": "bk",
+    "IKT": "5004",
     "identifier": [
       "http://id.loc.gov/vocabulary/classSchemes/bkl",
       "http://uri.gbv.de/terminology/bk/",
@@ -146,6 +150,7 @@
     "PICA": "045R",
     "SRC": "^[kvA](.+)",
     "VOC": "rvk",
+    "IKT": "3002",
     "identifier": [
       "http://www.wikidata.org/entity/Q2137453",
       "http://uri.gbv.de/terminology/rvk/"

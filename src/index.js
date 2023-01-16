@@ -80,6 +80,7 @@ async function createServer() {
       // ignore
     }
     const notation = scheme.notationFromUri(member)
+    const link = links.find(l => l.database.uri === database.uri)
     if (otherScheme === undefined) {
       const result = await backend.occurrences({ scheme, notation })
       const occurrence = {
@@ -94,10 +95,8 @@ async function createServer() {
         modified,
         count: parseInt(result.freq),
       }
-      const link = links.find(l => l.database.uri === database.uri && l.fromScheme.uri === scheme.uri)
-      if (link) {
-        // FIXME: We expect template to only use '{notation}' but it may not do so
-        occurrence.url = link.template.replace("{notation}",encodeURI(notation))
+      if (link && scheme.IKT) {
+        occurrence.url = link.templateOccurrences.replace("{notation}",encodeURI(notation)).replace("{ikt}",scheme.IKT)
       }
       res.json([occurrence])
     } else {
@@ -128,7 +127,9 @@ async function createServer() {
           ],
           modified,
           count: parseInt(row.freq),
-          // TODO: url
+        }
+        if (link && scheme.IKT && targetScheme.IKT) {
+          entry.url = link.templateCoOccurrences.replace("{notation1}",encodeURI(scheme.notationFromUri(member))).replace("{notation2}",encodeURI(row.notation)).replace("{ikt1}", scheme.IKT).replace("{ikt2}", targetScheme.IKT)
         }
         return entry
       }).filter(Boolean))

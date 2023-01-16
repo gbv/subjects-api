@@ -1,38 +1,7 @@
 [
   {
-    "fromScheme": { "VOC": "gnd", "uri": "http://bartoc.org/en/node/430" },
     "database": { "uri": "http://uri.gbv.de/database/opac-de-627" },
-    "template": "https://opac.k10plus.de/DB=2.299/CLK?IKT=8549&TRM={notation}",
-    "IKT": "8549"
-  },
-  {
-    "fromScheme": { "VOC": "bk", "uri": "http://bartoc.org/en/node/18785" },
-    "database": { "uri": "http://uri.gbv.de/database/opac-de-627" },
-    "template": "https://opac.k10plus.de/DB=2.299/CLK?IKT=5004&TRM={notation}",
-    "IKT": "5004"
-  },
-  {
-    "fromScheme": { "VOC": "rvk", "uri": "http://bartoc.org/en/node/533" },
-    "database": { "uri": "http://uri.gbv.de/database/opac-de-627" },
-    "template": "https://opac.k10plus.de/DB=2.299/CLK?IKT=3002&TRM={notation}",
-    "IKT": "3002"
-  },
-  {
-    "fromScheme": { "VOC": "ddc", "uri": "http://bartoc.org/en/node/241" },
-    "database": { "uri": "http://uri.gbv.de/database/opac-de-627" },
-    "template": "https://opac.k10plus.de/DB=2.299/CMD?IKT=3011&TRM={notation}",
-    "IKT": "3011"
-  },
-  {
-    "fromScheme": { "VOC": "lcsh", "uri": "http://bartoc.org/en/node/454" },
-    "database": { "uri": "http://uri.gbv.de/database/opac-de-627" },
-    "template": "https://opac.k10plus.de/DB=2.299/CMD?IKT=8506&TRM={notation}",
-    "IKT": "8506"
-  },
-  {
-    "fromScheme": { "VOC": "lcnaf", "uri": "http://bartoc.org/en/node/18536" },
-    "database": { "uri": "http://uri.gbv.de/database/opac-de-627" },
-    "template": "https://opac.k10plus.de/DB=2.299/CMD?IKT=8506&TRM={notation}",
-    "IKT": "8506"
+    "templateOccurrences": "https://opac.k10plus.de/DB=2.299/CLK?IKT={ikt}&TRM={notation}",
+    "templateCoOccurrences": "https://opac.k10plus.de/DB=2.299/CMD?ACT=SRCHM&ACT0=SRCHA&IKT0={ikt1}&TRM0={notation1}&ACT1=*&IKT1={ikt2}&TRM1={notation2}"
   }
 ]

@@ -15,7 +15,7 @@
     "SRC": "^A(.+)",
     "VOC": "asb",
     "namespace": "http://uri.gbv.de/terminology/asb/",
-    "notationPattern": "[A-Z]+( [0-9]+)",
+    "notationPattern": "[A-Z][a-z]*( [0-9]+)?",
     "prefLabel": { "de": "Allgemeine Systematik für Öffentliche Bibliotheken", "en": "General Systematic for Public Libraries" },
     "uri": "http://bartoc.org/en/node/732"
   },
@@ -35,7 +35,7 @@
     "SRC": "^A(.+)",
     "VOC": "sfb",
     "namespace": "http://uri.gbv.de/terminology/sfb/",
-    "notationPattern": "[A-Z]+ [0-9]+(.[0-9]| [A-Z] - [A-Z])?",
+    "notationPattern": "[A-Z][A-Za-zä]* [0-9]+(.[0-9]| [A-Z] - [A-Z])?",
     "prefLabel": { "de": "Systematik für Bibliotheken" },
     "uri": "http://bartoc.org/en/node/335"
   },
@@ -109,18 +109,7 @@
   },
   {
     "ID": "^7gnd/(.+)",
-    "PICA": "044K",
-    "SRC": "^A(.+)",
-    "VOC": "gnd",
-    "IKT": "8549",
-    "namespace": "https://d-nb.info/gnd/",
-    "notationPattern": "[0-9X]+(-[0-9X])?",
-    "prefLabel": { "de": "Gemeinsame Normdatei", "en": "Integrated Authority File" },
-    "uri": "http://bartoc.org/en/node/430"
-  },
-  {
-    "ID": "^7gnd/(.+)",
-    "PICA": "044L",
+    "PICA": "044K/00-99 044L/00-99",
     "SRC": "^[kvA](.+)",
     "VOC": "gnd",
     "IKT": "8549",

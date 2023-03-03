@@ -7,7 +7,7 @@
 
 > API to provide (co-)occurrences based on the K10plus catalog.
 
-An occurrence gives information about how often a concept (or combination of concepts for co-occurrences) is used in a database.
+An occurrence gives information about how (often) a concept (or combination of concepts for co-occurrences) is used in a database.
 
 ## Table of Contents
 
@@ -61,13 +61,20 @@ npm run start
 
 ### GET /api
 
-Returns a (possibly empty) array of [JSKOS Concept Occurrences](https://gbv.github.io/jskos/jskos.html#concept-occurrences). Existence of query parameter `scheme` defines whether simple occurrences or co-occurrences are returned. Simple occurrences also contain deep links into K10plus catalog for selected vocabularies.
+Returns a (possibly empty) array of [JSKOS Concept Occurrences](https://gbv.github.io/jskos/jskos.html#concept-occurrences). Depending on query parameters the result consists of:
+
+- the occurrence of a concept specified via `member`
+- the occurrence of concepts in a record specified via `record`
+- the co-occurrences of a concept specified via `member` in all records, when query parameter `scheme` is given
+
+Occurrences contain deep links into K10plus catalog for selected vocabularies.
 
 **Query parameters:**
 
-- `member` (required) - URI of a concept from supported vocabularies
-- `scheme` (optional) - URI of a target concept scheme (when given, co-occurrences are returned; when value `*` is given, all supported target schemes are used)
-- `threshold` (optional) - a minimum threshold for the frequency of co-occurrences
+- `member` - URI of a concept from supported vocabularies
+- `record` - URI of a K10plus record
+- `scheme` - URI of a target concept scheme (when given, co-occurrences are returned; when value `*` is given, all supported target schemes are used)
+- `threshold` - a minimum threshold for co-occurrences to be included
 
 ### GET /api/voc
 

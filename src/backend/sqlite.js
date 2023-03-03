@@ -42,6 +42,10 @@ CREATE TABLE metadata (
     return this.db.prepare(`SELECT b.voc, b.notation, count(*) AS freq FROM subjects AS b JOIN (SELECT ppn FROM subjects WHERE voc = ? AND notation = ?) a ON a.ppn = b.ppn WHERE b.voc ${otherScheme ? "=" : "!="} ? GROUP BY b.voc, b.notation HAVING count(*) >= ? ORDER BY freq DESC LIMIT 10;`).all([scheme.VOC, notation, otherScheme ? otherScheme.VOC : scheme.VOC, threshold])
   }
 
+  async subjects({ppn}) { 
+    return this.db.prepare("SELECT voc, notation FROM subjects WHERE ppn = ?").all([ppn])
+  }
+
   async updateRecord(ppn, rows=[]) {
     const deleteAll = this.db.prepare("DELETE FROM subjects WHERE ppn = ?")
     const deleteOne = this.db.prepare("DELETE FROM subjects WHERE ppn = @ppn AND voc = @voc")

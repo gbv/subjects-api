@@ -2,6 +2,7 @@
   {
     "database": { "uri": "http://uri.gbv.de/database/opac-de-627" },
     "templateOccurrences": "https://opac.k10plus.de/DB=2.299/CLK?IKT={ikt}&TRM={notation}",
-    "templateCoOccurrences": "https://opac.k10plus.de/DB=2.299/CMD?ACT=SRCHM&ACT0=SRCHA&IKT0={ikt1}&TRM0={notation1}&ACT1=*&IKT1={ikt2}&TRM1={notation2}"
+    "templateCoOccurrences": "https://opac.k10plus.de/DB=2.299/CMD?ACT=SRCHM&ACT0=SRCHA&IKT0={ikt1}&TRM0={notation1}&ACT1=*&IKT1={ikt2}&TRM1={notation2}",
+    "templateRecord": "https://opac.k10plus.de/DB=2.299/PPNSET?PPN={ppn}"
   }
 ]

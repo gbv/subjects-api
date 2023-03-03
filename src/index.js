@@ -12,6 +12,28 @@ const database = {
   },
 }
 
+const databaseLink = links.find(l => l.database.uri === database.uri) || {}
+
+// lookup table
+const voc2scheme = Object.fromEntries(schemes.map(s => [s.VOC,s]))
+schemes.get = voc => voc2scheme[voc]
+
+function extendConcept(c) {
+  const scheme = schemes.get(c.voc)
+  if (scheme) {
+    if (c.uri) {
+      const ext = { uri: c.uri, inScheme: [{uri:scheme.uri}] }
+      const notation = scheme.notationFromUri(c.uri) 
+      if (notation) {
+        ext.notation = [notation]
+      }
+      return ext
+    } else if (c.notation) {
+      return scheme.conceptFromNotation(c.notation, { inScheme: true })
+    }
+  }
+}
+
 async function createServer() {
   // Connect to backend
   const backend = await connect()
@@ -54,8 +76,40 @@ async function createServer() {
 
   // API route
   app.get("/api", async (req, res) => {
-    const member = req.query.member
+    const { member, record } = req.query
     const threshold = parseInt(req.query.threshold) || 0
+
+    let modified
+    try {
+      const metadata = await backend.metadata({ counts: false })
+      modified = metadata.modified
+    } catch (error) {
+      // ignore
+    }
+
+    if (record) {
+      var result = []
+      if (record.startsWith("http://uri.gbv.de/document/opac-de-627:ppn:")) {
+        const ppn = record.split(":").pop()
+        result = await backend.subjects({ ppn })
+        result = result.map(extendConcept).filter(Boolean)
+        if (member) {
+          result = result.filter(c => c.uri === member)
+        }
+        if (req.query.scheme && req.query.scheme != "*") {
+          result = result.filter(c => c.inScheme[0].uri === req.query.scheme)
+        }
+        result = result.map(c => {
+          const occ = { database, memberSet: [c], modified }
+          if (databaseLink.templateRecord) {
+            occ.url = databaseLink.templateRecord.replace("{ppn}",encodeURI(ppn))
+          }
+          return occ
+        })
+      }
+      return res.json(result)
+    }
+
     const scheme = schemes.find(s => {
       return s.notationFromUri(member)
     })
@@ -72,15 +126,7 @@ async function createServer() {
         return res.json([])
       }
     }
-    let modified
-    try {
-      const metadata = await backend.metadata({ counts: false })
-      modified = metadata.modified
-    } catch (error) {
-      // ignore
-    }
     const notation = scheme.notationFromUri(member)
-    const link = links.find(l => l.database.uri === database.uri)
     if (otherScheme === undefined) {
       const result = await backend.occurrences({ scheme, notation })
       const occurrence = {
@@ -95,8 +141,8 @@ async function createServer() {
         modified,
         count: parseInt(result.freq),
       }
-      if (link && scheme.IKT) {
-        occurrence.url = link.templateOccurrences.replace("{notation}",encodeURI(notation)).replace("{ikt}",scheme.IKT)
+      if (databaseLink.templateOccurrences && scheme.IKT) {
+        occurrence.url = databaseLink.templateOccurrences.replace("{notation}",encodeURI(notation)).replace("{ikt}",scheme.IKT)
       }
       res.json([occurrence])
     } else {
@@ -104,7 +150,7 @@ async function createServer() {
       res.json(result.map(row => {
         let targetScheme = otherScheme
         if (!targetScheme) {
-          targetScheme = schemes.find(s => s.VOC === row.voc)
+          targetScheme = schemes.get(row.voc)
           if (!targetScheme) {
             return null
           }
@@ -128,8 +174,8 @@ async function createServer() {
           modified,
           count: parseInt(row.freq),
         }
-        if (link && scheme.IKT && targetScheme.IKT) {
-          entry.url = link.templateCoOccurrences.replace("{notation1}",encodeURI(scheme.notationFromUri(member))).replace("{notation2}",encodeURI(row.notation)).replace("{ikt1}", scheme.IKT).replace("{ikt2}", targetScheme.IKT)
+        if (databaseLink.templateCoOccurrences && scheme.IKT && targetScheme.IKT) {
+          entry.url = databaseLink.templateCoOccurrences.replace("{notation1}",encodeURI(scheme.notationFromUri(member))).replace("{notation2}",encodeURI(row.notation)).replace("{ikt1}", scheme.IKT).replace("{ikt2}", targetScheme.IKT)
         }
         return entry
       }).filter(Boolean))

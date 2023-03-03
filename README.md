@@ -16,6 +16,8 @@ An occurrence gives information about how (often) a concept (or combination of c
 - [API](#api)
   - [GET /api](#get-api)
   - [GET /api/voc](#get-apivoc)
+  - [GET /databases](#get-databases)
+  - [GET /status](#get-status)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
 - [License](#license)
@@ -89,6 +91,14 @@ Occurrences contain deep links into K10plus catalog for selected vocabularies.
 ### GET /api/voc
 
 Returns an array of supported vocabularies as [JSKOS Concept Schemes](https://gbv.github.io/jskos/jskos.html#concept-schemes).
+
+### GET /databases
+
+Returns an array of supported databases. Return format is experimental.
+
+### GET /status
+
+Returns information about the service. Return format is experimental.
 
 ## Maintainers
 

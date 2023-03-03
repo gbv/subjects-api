@@ -1,16 +1,7 @@
-import { connect, config, schemes, links } from "./config.js"
+import { connect, config, schemes, links, databases } from "./config.js"
 import { OccurrencesService } from "./service.js"
 
 import express from "express"
-
-// Value for `database` key for returned occurrences
-const database = {
-  uri: "http://uri.gbv.de/database/opac-de-627",
-  prefLabel: {
-    en: "K10plus Union Catalogue",
-    de: "K10plus-Verbundkatalog",
-  },
-}
 
 async function createServer() {
   // Connect to backend
@@ -21,7 +12,7 @@ async function createServer() {
   // const { recCount, occCount, vocCount } = await backend.metadata()
   // console.log(`Backend contains ${occCount} occurrences from ${recCount} records with ${vocCount} vocabularies.`)
 
-  const service = new OccurrencesService({backend, schemes, links, database})
+  const service = new OccurrencesService({backend, schemes, links, databases})
 
   const app = express()
   app.set("json spaces", 2)
@@ -60,6 +51,11 @@ async function createServer() {
   // Supported vocabularies
   app.get("/api/voc", async (req, res) => {
     res.json(schemes)
+  })
+
+  // Supported databases
+  app.get("/databases", async (req, res) => {
+    res.json(databases)
   })
 
   app.get("/status", async (req, res) => {

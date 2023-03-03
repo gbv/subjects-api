@@ -21,6 +21,15 @@ import fs from "fs"
 export const schemes = JSON.parse(fs.readFileSync(config.schemesFile)).map(scheme => new jskos.ConceptScheme(scheme))
 export const links = JSON.parse(fs.readFileSync(config.linksFile))
 
+// Supported databases (only K10plus so far)
+export const databases = [{
+  uri: "http://uri.gbv.de/database/opac-de-627",
+  prefLabel: {
+    en: "K10plus Union Catalogue",
+    de: "K10plus-Verbundkatalog",
+  },
+}]
+
 import SQLiteBackend from "./backend/sqlite.js"
 import PostgreSQLBackend from "./backend/postgres.js"
 const backends = [SQLiteBackend, PostgreSQLBackend]

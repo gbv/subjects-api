@@ -2,10 +2,10 @@ import jskos from "jskos-tools"
 
 export class OccurrencesService {    
 
-  constructor({ backend, schemes, database, links }) {
+  constructor({ backend, schemes, databases, links }) {
     this.backend = backend
-    this.database = database
-    this.links = links.find(l => l.database.uri === database.uri) || {}
+    this.database = databases[0]
+    this.links = links.find(l => l.database.uri === this.database.uri) || {}
     this.schemes = schemes
     const voc2scheme = Object.fromEntries(schemes.map(s => [s.VOC,s]))
     this.schemes.get = voc => voc2scheme[voc]

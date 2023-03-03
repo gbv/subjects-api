@@ -1,9 +1,7 @@
 # Occurrences-API
 
 <!-- [![Test](https://github.com/gbv/jskos-server/actions/workflows/test.yml/badge.svg)](https://github.com/gbv/jskos-server/actions/workflows/test.yml) -->
-[![GitHub package version](https://img.shields.io/github/package-json/v/gbv/occurrences-api.svg?label=version)](https://github.com/gbv/occurrences-api)
-<!-- [![Uptime Robot status](https://img.shields.io/uptimerobot/status/m780815088-08758d5c5193e7b25236cfd7.svg?label=%2Fapi%2F)](https://stats.uptimerobot.com/qZQx1iYZY/780815088) -->
-[![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
+[![GitHub package version](https://img.shields.io/github/package-json/v/gbv/occurrences-api.svg?label=version)](https://github.com/gbv/occurrences-api)<!-- [![Uptime Robot status](https://img.shields.io/uptimerobot/status/m780815088-08758d5c5193e7b25236cfd7.svg?label=%2Fapi%2F)](https://stats.uptimerobot.com/qZQx1iYZY/780815088) --> [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
 > API to provide (co-)occurrences based on the K10plus catalog.
 
@@ -13,6 +11,7 @@ An occurrence gives information about how (often) a concept (or combination of c
 
 - [Install](#install)
   - [Configuration](#configuration)
+  - [Backends](#backends)
 - [Usage](#usage)
 - [API](#api)
   - [GET /api](#get-api)
@@ -33,23 +32,34 @@ npm i
 
 ### Configuration
 
-1. (optional) Create a configuration file `.env` to change certain config options. Here are the default values:
+Optionally create a configuration file `.env` to change certain config options. Here are the default values:
 
 ```env
 PORT=3141
+BACKEND=SQLite
 DATABASE=./subjects.db
 SCHEMES=./vocabularies.json
 LINKS=./links.json
 ```
 
-2. (optional) All vocabularies supported in [K10Plus Subjects] are preconfigured. To override those vocabularies, set the `SCHEMES` config option to a JSON file provided by you.
+All vocabularies included in [K10Plus Subjects] are preconfigured via `vocabularies.json`.
 
-3. (required) Fill backend database with subject indexing data from K10plus catalog. This requires to start the application once to create SQLite database file under `subjects.db`. Then download data from <https://doi.org/10.5281/zenodo.7016625> (given as tabulator separated file table with columns PPN, vocabulary key, and notation) and import into SQLite file:
+Then full the backend database (SQLite by default) with subject indexing data from K10plus catalog. The script `./bin/import.js` can be used to do so (***not documented yet***). 
 
-  ~~~~
-  URL=$(curl -sL "https://zenodo.org/api/records/7016625" | jq -r '.files[]|select(.key|endswith(".tsv.gz"))|.links.self')
-  curl -sL $URL | zcat | sqlite3 subjects.db -cmd ".mode tabs" ".import /dev/stdin subjects"
-  ~~~~
+### Backends
+
+#### SQLite
+
+This requires to start the application once to create SQLite database file under `subjects.db`. Then download data from <https://doi.org/10.5281/zenodo.7016625> (given as tabulator separated file table with columns PPN, vocabulary key, and notation) and import into SQLite file:
+
+~~~~
+URL=$(curl -sL "https://zenodo.org/api/records/7016625" | jq -r '.files[]|select(.key|endswith(".tsv.gz"))|.links.self')
+curl -sL $URL | zcat | sqlite3 subjects.db -cmd ".mode tabs" ".import /dev/stdin subjects"
+~~~~
+
+#### PostgreSQL
+
+*not documented yet*
 
 ## Usage
 

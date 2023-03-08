@@ -108,7 +108,7 @@ export class OccurrencesService {
         },
       ],
       modified: await this.modified(),
-      count: parseInt(result.freq),
+      count: parseInt(result.freq || 0),
     }
     if (this.links.templateOccurrences && memberScheme.IKT) {
       occ.url = this.links.templateOccurrences.replace("{notation}",encodeURI(notation)).replace("{ikt}",memberScheme.IKT)

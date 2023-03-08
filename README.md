@@ -24,7 +24,7 @@ An occurrence gives information about how (often) a concept (or combination of c
 
 ## Install
 
-Requires Node.js v16 or later.
+Requires Node.js v16 or v18 (v19 won't do).
 
 ```bash
 git clone https://github.com/gbv/occurrences-api.git
@@ -68,6 +68,10 @@ curl -sL $URL | zcat | sqlite3 subjects.db -cmd ".mode tabs" ".import /dev/stdin
 ```bash
 npm run start
 ```
+
+#### SPARQL
+
+Requires `DATABASE` set to URL of SPARQL endpoint. Optionally configure a named graph with `GRAPH`.
 
 ## API
 

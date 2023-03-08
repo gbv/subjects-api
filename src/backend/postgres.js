@@ -85,6 +85,11 @@ export default class PostgreSQLBackend {
     }
   }
 
+
+  async subjects({ppn}) {
+    throw new Error(`Subjects ${ppn} not implemented yet`) // TODO
+  }
+
   async updateRecord(ppn, rows=[]) {
     const deleteAllQuery = "DELETE FROM subjects WHERE ppn = $1"
     const deleteOneQuery = "DELETE FROM subjects WHERE ppn = $1 AND voc = $2"

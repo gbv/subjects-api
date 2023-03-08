@@ -1,5 +1,6 @@
-import { connect, config, schemes, links, databases } from "./config.js"
+import { connect, config, links, databases } from "./config.js"
 import { OccurrencesService } from "./service.js"
+const { schemes } = config
 
 import express from "express"
 

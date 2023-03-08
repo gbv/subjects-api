@@ -5,6 +5,7 @@ export const config = {
   port: process.env.PORT || 3141,
   backend: process.env.BACKEND || "SQLite", 
   database: process.env.DATABASE || "./subjects.db",
+  graph: process.env.GRAPH || "default",
   db: {
     name: process.env.DB_NAME || process.env.DATABASE,
     user: process.env.DB_USER,
@@ -18,7 +19,8 @@ export const config = {
 
 import jskos from "jskos-tools"
 import fs from "fs"
-export const schemes = JSON.parse(fs.readFileSync(config.schemesFile)).map(scheme => new jskos.ConceptScheme(scheme))
+
+config.schemes = JSON.parse(fs.readFileSync(config.schemesFile)).map(scheme => new jskos.ConceptScheme(scheme))
 export const links = JSON.parse(fs.readFileSync(config.linksFile))
 
 // Supported databases (only K10plus so far)
@@ -32,7 +34,9 @@ export const databases = [{
 
 import SQLiteBackend from "./backend/sqlite.js"
 import PostgreSQLBackend from "./backend/postgres.js"
-const backends = [SQLiteBackend, PostgreSQLBackend]
+import SPARQLBackend from "./backend/sparql.js"
+
+const backends = [SQLiteBackend, PostgreSQLBackend, SPARQLBackend]
 const backendClass = backends.find(b => b.name === `${config.backend}Backend`)
 
 if (!backendClass) {
@@ -45,6 +49,6 @@ export const backend = new backendClass()
 const backendConnectPromise = backend.connect(config)
 export const connect = async () => {
   await backendConnectPromise
-  console.log(`Configured ${schemes.length} vocabularies from ${config.schemesFile}. Using ${backend.name}.`)
+  console.log(`Configured ${config.schemes.length} vocabularies from ${config.schemesFile}. Using ${backend.name}.`)
   return backend
 }

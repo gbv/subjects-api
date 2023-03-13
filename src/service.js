@@ -1,14 +1,17 @@
 import jskos from "jskos-tools"
 
-export class OccurrencesService {    
+export class OccurrencesService {
 
   constructor({ backend, schemes, databases, links }) {
     this.backend = backend
     this.database = databases[0]
     this.links = links.find(l => l.database.uri === this.database.uri) || {}
+
+    // TODO: https://github.com/gbv/jskos-tools/issues/38
     this.schemes = schemes
-    const voc2scheme = Object.fromEntries(schemes.map(s => [s.VOC,s]))
-    this.schemes.get = voc => voc2scheme[voc]
+    this.schemes.findByConceptUri = uri => this.schemes.find(s => s.notationFromUri(uri))
+    this.schemes.findByUri = uri => this.schemes.find(s => s.uri === uri)
+    this.schemes.findByVOC = voc => this.schemes.find(s => s.VOC === voc)
   }
 
   async modified() {
@@ -19,18 +22,14 @@ export class OccurrencesService {
     }
   }
 
-  schemeOfConcept(uri) {
-    return this.schemes.find(s => s.notationFromUri(uri))
-  }
-
-  async request(query) {      
+  async request(query) {
     const { record, member } = query
 
     if (record) {
       return this.subjects(query)
     }
 
-    const memberScheme = this.schemeOfConcept(member)
+    const memberScheme = this.schemes.findByConceptUri(member)
     if (!memberScheme) {
       return []
     }
@@ -58,12 +57,12 @@ export class OccurrencesService {
 
     var result = await this.backend.subjects({ ppn })
 
-    // expand backend result to full JSKOS concepts
+    // expand backend result to full JSKOS concepts (TODO: backend may return full JSKOS concept)
     result = result.map(c => {
-      const scheme = this.schemes.get(c.voc)
+      const scheme = this.schemes.findByVOC(c.voc)
       if (scheme) {
         if (c.uri) {
-          const notation = scheme.notationFromUri(c.uri) 
+          const notation = scheme.notationFromUri(c.uri)
           return {
             uri: c.uri,
             inScheme: [{uri:scheme.uri}],
@@ -108,7 +107,7 @@ export class OccurrencesService {
         },
       ],
       modified: await this.modified(),
-      count: parseInt(result.freq || 0),
+      count: parseInt(result.freq) || 0,
     }
     if (this.links.templateOccurrences && memberScheme.IKT) {
       occ.url = this.links.templateOccurrences.replace("{notation}",encodeURI(notation)).replace("{ikt}",memberScheme.IKT)
@@ -123,18 +122,26 @@ export class OccurrencesService {
     const modified = await this.modified()
     const { schemes, links, database } = this
 
-    return result.map(row => {
-      let targetScheme = otherScheme
-      if (!targetScheme) {
-        targetScheme = schemes.get(row.voc)
-        if (!targetScheme) {
+    return result.map(({ freq, concept, voc, notation }) => {
+      if (concept) { // backend returns full JSKOS concept
+        if (!otherScheme) {
+          otherScheme = schemes.findByUri(concept.inScheme[0].uri)
+        }
+        notation = otherScheme.notationFromUri(concept.uri)
+      } else { // backend returns voc and notation to build concept from
+        if (!otherScheme) {
+          otherScheme = schemes.findByVOC(voc)
+        }
+        const uri = otherScheme?.uriFromNotation(notation)
+        if (!uri) {
           return null
         }
+        concept = {
+          uri,
+          inScheme: [{ uri: otherScheme.uri }],
+        }
       }
-      const targetConceptUri = targetScheme.uriFromNotation(row.notation)
-      if (!targetConceptUri) {
-        return null
-      }
+
       const entry = {
         database,
         memberSet: [
@@ -142,16 +149,13 @@ export class OccurrencesService {
             uri: member,
             inScheme: [{ uri: memberScheme.uri }],
           },
-          {
-            uri: targetScheme.uriFromNotation(row.notation),
-            inScheme: [{ uri: targetScheme.uri }],
-          },
+          concept,
         ],
         modified,
-        count: parseInt(row.freq),
+        count: parseInt(freq) || 0,
       }
-      if (links.templateCoOccurrences && memberScheme.IKT && targetScheme.IKT) {
-        entry.url = links.templateCoOccurrences.replace("{notation1}",encodeURI(notation)).replace("{notation2}",encodeURI(row.notation)).replace("{ikt1}", memberScheme.IKT).replace("{ikt2}", targetScheme.IKT)
+      if (links.templateCoOccurrences && memberScheme.IKT && otherScheme?.IKT) {
+        entry.url = links.templateCoOccurrences.replace("{notation1}",encodeURI(notation)).replace("{notation2}",encodeURI(notation)).replace("{ikt1}", memberScheme.IKT).replace("{ikt2}", otherScheme.IKT)
       }
       return entry
     }).filter(Boolean)

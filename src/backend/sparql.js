@@ -5,7 +5,7 @@ export default class SPARQLBackend {
   async connect(config) {
     this.base = (new URL(config.database)).toString() // check for valid URL
     this.graph = config.graph || "default"
-    this.metadata = config.metadata
+    this.metadataCache = config.metadata
     this.schemes = config.schemes
     this.name = `SPARQL Endpoint ${this.base} graph ${this.graph}`
   }
@@ -19,10 +19,23 @@ export default class SPARQLBackend {
       .then(result => ({ freq: result[0].freq.value }))
   }
 
-  async coOccurrences(/*{scheme, notation, otherScheme, threshold}*/) {
-    // const uri = scheme.uriFromNotation(notation)
-    throw new Error("Not implemented yet") // TODO
-    // requires inScheme-triples
+  async coOccurrences({scheme, notation, otherScheme, threshold}) {
+    const subject = scheme.uriFromNotation(notation)
+    const query = `SELECT ?uri ?voc (COUNT(?record) AS ?freq) FROM <${this.graph}> {`
+        + (otherScheme ? `BIND(<${otherScheme.uri}> AS ?voc).` : "")
+        + ` ?record <http://purl.org/dc/terms/subject> <${subject}> ;
+              <http://purl.org/dc/terms/subject> ?uri .
+      ?uri <http://www.w3.org/2004/02/skos/core#inScheme> ?voc .
+      FILTER(?uri != <${subject}>)
+    } GROUP BY ?uri ?voc`
+    + (threshold ? ` HAVING(?freq > ${threshold})` : "")
+    + " ORDER BY DESC(?freq)"
+    console.log(query)
+    return this.sparql(query).then(result => result.map(({uri,voc,freq}) => {
+      const concept = this.uri2concept(uri.value)
+      concept.inScheme = [{uri:voc}]
+      return concept ? { concept, freq } : null
+    }).filter(Boolean))
   }
 
   async subjects({ppn}) {
@@ -33,21 +46,22 @@ export default class SPARQLBackend {
 
   async updateRecord(/*ppn, rows=[]*/) {
     throw new Error("Not implemented yet") // TODO
-  }  
+  }
 
-  async metadata({ counts = true } = {}) {
-    const { metadata } = this
+  // metadata is not stored persistently with this backend!
+  async metadata({ counts = true }) {
+    const metadata = this.metadataCache
     if (counts) {
-      throw new Error("Not implemented yet") // TODO
-      // metadata.occCount =
-      // metadata.recCount =
-      // metadata.vocCount =
+      throw new Error("Not implemented yet (very expensive queries)")
+      // metadata.occCount = // SELECT (COUNT(*) AS ?c) FROM <https://uri.gbv.de/graph/kxp-subjects> { [] <http://purl.org/dc/terms/subject> [] }
+      // metadata.recCount = // SELECT (COUNT(DISTINCT ?rec) AS ?c) FROM <https://uri.gbv.de/graph/kxp-subjects> { ?rec <http://purl.org/dc/terms/subject> [] }
+      // metadata.vocCount = // SELECT (COUNT(DISTINCT ?voc) AS ?c) FROM <https://uri.gbv.de/graph/kxp-subjects> { [] <http://www.w3.org/2004/02/skos/core#inScheme> ?voc }
     }
     return metadata
   }
 
-  async updateMetadata(/*data*/) {
-    throw new Error("Not implemented yet") // TODO
+  async updateMetadata(data) {
+    (Array.isArray(data) ? data : [data]).forEach(({key,value}) => this.metadataCache[key] = value)
   }
 
   // Utility methods

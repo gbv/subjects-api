@@ -52,16 +52,24 @@ Then full the backend database (SQLite by default) with subject indexing data fr
 
 #### SQLite
 
-This requires to start the application once to create SQLite database file under `subjects.db`. Then download data from <https://doi.org/10.5281/zenodo.7016625> (given as tabulator separated file table with columns PPN, vocabulary key, and notation) and import into SQLite file:
+Requires to start the application once to create SQLite database file under `subjects.db`. Then download data from <https://doi.org/10.5281/zenodo.7016625> (given as tabulator separated file table with columns PPN, vocabulary key, and notation) and import into SQLite file:
 
 ~~~~
 URL=$(curl -sL "https://zenodo.org/api/records/7016625" | jq -r '.files[]|select(.key|endswith(".tsv.gz"))|.links.self')
 curl -sL $URL | zcat | sqlite3 subjects.db -cmd ".mode tabs" ".import /dev/stdin subjects"
 ~~~~
 
-#### PostgreSQL
+#### SPARQL (experimental)
 
-*not documented yet*
+Requires a SPARQL-Endpoint, including SPARQL Update and SPARQL Graph Store Protocol for write access. Only tested with Apache Jena Fuseki.
+
+#### PostgreSQL (experimental)
+
+Requires PostgreSQL database. It turned out performance of SQLite is better, for this reasons this backend is not developed further.
+
+#### SRU (not implemented yet)
+
+Requires a SRU-API to query from so live data can be returned.
 
 ## Usage
 

@@ -20,6 +20,13 @@ export const config = {
 import jskos from "jskos-tools"
 import fs from "fs"
 
+import path from "path"
+for (let name of ["schemesFile","linksFile"]) {
+  if (!path.isAbsolute(config[name])) {
+    config[name] = path.resolve(process.env.PWD, config[name])
+  }
+}
+
 config.schemes = JSON.parse(fs.readFileSync(config.schemesFile)).map(scheme => new jskos.ConceptScheme(scheme))
 export const links = JSON.parse(fs.readFileSync(config.linksFile))
 

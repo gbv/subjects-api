@@ -63,6 +63,12 @@ curl -sL $URL | zcat | sqlite3 subjects.db -cmd ".mode tabs" ".import /dev/stdin
 
 Requires a SPARQL-Endpoint, including SPARQL Update and SPARQL Graph Store Protocol for write access. Only tested with Apache Jena Fuseki.
 
+~~~
+BACKEND=SPARQL
+DATABASE=http://localhost:3030/k10plus
+GRAPH=https://uri.gbv.de/graph/kxp-subjects     # optional
+~~~
+
 #### PostgreSQL (experimental)
 
 Requires PostgreSQL database. It turned out performance of SQLite is better, for this reasons this backend is not developed further.

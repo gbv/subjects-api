@@ -1,4 +1,5 @@
 import { URL } from "url"
+import fetch from "node-fetch"
 
 export default class SPARQLBackend {
 

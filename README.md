@@ -24,7 +24,7 @@ An occurrence gives information about how (often) a concept (or combination of c
 
 ## Install
 
-Requires Node.js v16 or v18 (v19 won't do).
+Requires Node.js v16 or newer.
 
 ```bash
 git clone https://github.com/gbv/subjects-api.git

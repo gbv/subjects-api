@@ -27,7 +27,7 @@
   },
   "pre-commit": "test",
   "dependencies": {
-    "better-sqlite3": "^7.6.2",
+    "better-sqlite3": "^8.4.0",
     "csv-parser": "^3.0.0",
     "dotenv": "^16.1.4",
     "ejs": "^3.1.9",

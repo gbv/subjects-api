@@ -1,5 +1,5 @@
-import { connect, config, links, databases } from "./config.js"
-import { OccurrencesService } from "./service.js"
+import { connect, config, links, databases } from "./src/config.js"
+import { OccurrencesService } from "./src/service.js"
 const { schemes } = config
 
 import express from "express"
@@ -41,7 +41,7 @@ async function createServer() {
   // Root path for static page
   app.get("/", (req, res) => {
     res.setHeader("Content-Type", "text/html")
-    res.render("index", { config })
+    res.render("index", { ...config })
   })
 
   // Delegate main API route to OccurrencesService

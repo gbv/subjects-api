@@ -1,6 +1,6 @@
 {
-  "name": "occurrences-api",
-  "script": "./src/index.js",
+  "name": "subjects-api",
+  "script": "./server.js",
   "env": {
     "NODE_ENV": "production"
   }

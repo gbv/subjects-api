@@ -1,7 +1,19 @@
-// Configuration
 import * as dotenv from "dotenv"
-dotenv.config()
+
+const NODE_ENV = process.env.NODE_ENV || "development"
+
+// use default configuration when testing
+if (NODE_ENV !== "test") {
+  dotenv.config()
+}
+
+import { readFile } from "node:fs/promises"
+const fileUrl = new URL("../package.json", import.meta.url)
+const { name, version, homepage } = JSON.parse(await readFile(fileUrl, "utf8"))
+
 export const config = {
+  env: NODE_ENV,
+  name, version, homepage,
   port: process.env.PORT || 3141,
   backend: process.env.BACKEND || "SQLite", 
   database: process.env.DATABASE || "./subjects.db",

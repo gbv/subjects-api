@@ -4,9 +4,15 @@ module.exports = {
     node: true,
     mocha: true,
   },
-  extends: ["gbv"],
+  extends: [
+    "gbv",
+    "gbv/vue/3",
+  ],
+  rules: {
+    "vue/require-default-prop": "off"
+  },
   parserOptions: {
     sourceType: "module",
-    ecmaVersion: 2020,
-  },
+    ecmaVersion: 2022,
+  },    
 }

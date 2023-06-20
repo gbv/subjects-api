@@ -124,35 +124,35 @@
         <h2>API</h2>
         <p><b>Endpoints</b></p>
         <ul>
-          <li><a href="./api" target="_blank">/api</a></li> get occurrences for given concept (query parameter <code>member</code>), co-occurrences for given concept and vocabularies (parameters <code>member</code> and <code>scheme</code>), or subjects of given document (query parameter <code>record</code>).
-          <li><a href="./api/voc" target="_blank">/api/voc</a> lists supported vocabularies</li>
+          <li><a href="./occurrences" target="_blank">/occurrences</a></li> get occurrences for given concept (query parameter <code>member</code>), co-occurrences for given concept and vocabularies (parameters <code>member</code> and <code>scheme</code>), or  of given document (query parameter <code>record</code>).
+          <li><a href="./voc" target="_blank">/voc</a> lists supported vocabularies</li>
           <li><a href="./databases" target="_blank">/databases</a> lists supported databases</li>
         </ul>
         <p><b>Sample Queryies</b></p>
         <ul>
           <li>
-            <a href="./api/?member=http:%2F%2Frvk.uni-regensburg.de%2Fnt%2FDG%25209000" target="_blank">
+            <a href="./occurrences/?member=http:%2F%2Frvk.uni-regensburg.de%2Fnt%2FDG%25209000" target="_blank">
               occurrences of RVK DG 9000
             </a>
           </li>
           <li>
-            <a href="./api/?member=http:%2F%2Frvk.uni-regensburg.de%2Fnt%2FDG%25209000&scheme=http://bartoc.org/en/node/241" target="_blank">
+            <a href="./occurrences/?member=http:%2F%2Frvk.uni-regensburg.de%2Fnt%2FDG%25209000&scheme=http://bartoc.org/en/node/241" target="_blank">
               co-occurrences of RVK DG 9000 in DDC
             </a>
           </li>
           <li>
-            <a href="./api/?member=http:%2F%2Frvk.uni-regensburg.de%2Fnt%2FDG%25209000&scheme=*" target="_blank">
+            <a href="./occurrences/?member=http:%2F%2Frvk.uni-regensburg.de%2Fnt%2FDG%25209000&scheme=*" target="_blank">
               co-occurrences of RVK DG 9000 in all vocabularies
             </a>
           </li>
           <li>
-            <a href="./api/?record=http://uri.gbv.de/document/opac-de-627:ppn:012401471" target="_blank">
-              subjects of a record (all vocabularies)
+            <a href="./occurrences/?record=http://uri.gbv.de/document/opac-de-627:ppn:012401471" target="_blank">
+               of a record (all vocabularies)
             </a>
           </li>
         </ul>
         <p>
-          See also <a href="https://github.com/gbv/subjects-api#api" target="_blank">API documentation</a> and implementation for details. An interface to use the API will be added soon (see <a href="https://github.com/gbv/subjects-api/issues/19" target="_blank">#19</a>).
+          See also <a href="https://github.com/gbv/-api#api" target="_blank">API documentation</a> and implementation for details. An interface to use the API will be added soon (see <a href="https://github.com/gbv/subjects-api/issues/19" target="_blank">#19</a>).
         </p>
       </div>
     </main>

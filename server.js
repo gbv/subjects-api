@@ -45,12 +45,12 @@ async function createServer() {
   })
 
   // Delegate main API route to OccurrencesService
-  app.get("/api", async (req, res) => {
+  app.get(["/occurrences","/api"], async (req, res) => {
     res.json(await service.request(req.query))
   })
 
   // Supported vocabularies
-  app.get("/api/voc", async (req, res) => {
+  app.get(["/voc","/api/voc"], async (req, res) => {
     res.json(schemes)
   })
 

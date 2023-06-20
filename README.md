@@ -14,8 +14,8 @@ An occurrence gives information about how (often) a concept (or combination of c
   - [Backends](#backends)
 - [Usage](#usage)
 - [API](#api)
-  - [GET /api](#get-api)
-  - [GET /api/voc](#get-apivoc)
+  - [GET /occurrences](#get-occurrences)
+  - [GET /voc](#get-voc)
   - [GET /databases](#get-databases)
   - [GET /status](#get-status)
 - [Maintainers](#maintainers)
@@ -89,7 +89,7 @@ Requires `DATABASE` set to URL of SPARQL endpoint. Optionally configure a named 
 
 ## API
 
-### GET /api
+### GET /occurrences
 
 Returns a (possibly empty) array of [JSKOS Concept Occurrences](https://gbv.github.io/jskos/jskos.html#concept-occurrences). Depending on query parameters the result consists of:
 
@@ -106,9 +106,13 @@ Occurrences contain deep links into K10plus catalog for selected vocabularies.
 - `scheme` - URI of a target concept scheme (when given, co-occurrences are returned; when value `*` is given, all supported target schemes are used)
 - `threshold` - a minimum threshold for co-occurrences to be included
 
-### GET /api/voc
+There is a deprecated alias at `/api` to be removed soon. 
+
+### GET /voc
 
 Returns an array of supported vocabularies as [JSKOS Concept Schemes](https://gbv.github.io/jskos/jskos.html#concept-schemes).
+
+There is a deprecated alias at `/api/voc` to be removed soon. 
 
 ### GET /databases
 

@@ -83,6 +83,17 @@ Requires a SRU-API to query from so live data can be returned.
 npm run start
 ```
 
+Some backends allow to import data from a headerless TSV file with three
+columns for PPN, vocabulary id (`VOC`), and notation:
+
+```bash
+npm run import -- subjects.tsv
+```
+
+Option `--full` replaces the existing backend data, otherwise the data is added
+to existing subjects data.  Option `--modified` can be used to set the
+modification date (timestamp of file by default).
+
 #### SPARQL
 
 Requires `DATABASE` set to URL of SPARQL endpoint. Optionally configure a named graph with `GRAPH`.

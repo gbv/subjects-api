@@ -26,13 +26,8 @@ if (unknownArgs.length) {
   process.exit(1)
 }
 
-if (args.length > 1) {
-  console.error("Error: Only a single file argument supported")
-  process.exit(1)
-}
-
-if (args.length === 0) {
-  console.error("Error: No file name given")
+if (args.length != 1) {
+  console.error("Usage: npm run import -- [--full] [--modified YYYY-MM-DD] file.tsv")
   process.exit(1)
 }
 
@@ -53,52 +48,6 @@ if (file && !modified) {
 console.log()
 console.log(`${full ? "Full" : "Partial"} import with file ${file}, modified ${modified}.`)
 
-import csv from "csv-parser"
-import { connect } from "../src/config.js"
+import { importSubjects } from "../src/import.js"
 
-(async () => {
-  const backend = await connect()
-  const stream = fs.createReadStream(file)
-  const csvTransform = csv({
-    separator: "\t",
-    headers: ["ppn", "voc", "notation"],
-    quote: "",
-  })
-
-  if (full) {
-    try {
-      await backend.batchImport(backend.batchImportRequiresCSV ? stream.pipe(csvTransform) : stream)
-    } catch (error) {
-      console.error(error)
-    }
-  } else {
-    // Partial import
-    await new Promise(resolve => {
-      let ppn
-      let rows = []
-      stream
-        .pipe(csvTransform)
-        .on("data", row => {
-          if (row.ppn === ppn) {
-            rows.push(row)
-          } else {
-            if (ppn) {
-              backend.updateRecord(ppn, rows)
-            }
-            ppn = row.ppn
-            rows = [row]
-          }
-        })
-        .on("end", () => {
-          if (ppn) {
-            backend.updateRecord(ppn, rows)
-          }
-          resolve()
-        })
-    })
-  }
-  if (modified) {
-    await backend.updateMetadata({ key: "modified", value: modified })
-  }
-  await backend.disconnect()
-})()
+await importSubjects({file, full, modified})

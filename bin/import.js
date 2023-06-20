@@ -31,7 +31,6 @@ if (args.length > 1) {
   process.exit(1)
 }
 
-// TODO: Support import from stdin
 if (args.length === 0) {
   console.error("Error: No file name given")
   process.exit(1)

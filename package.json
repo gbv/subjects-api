@@ -12,7 +12,7 @@
   },
   "scripts": {
     "dev": "nodemon --watch .env --watch src/ --watch '*.json' server.js",
-    "test": "echo \"no test specified\"",
+    "test": "NODE_ENV=test mocha --exit",
     "start": "NODE_ENV=production node server.js",
     "lint": "eslint --ignore-path .gitignore --ext .js,.vue .",
     "fix": "npm run lint -- --fix",
@@ -37,12 +37,16 @@
     "node-fetch": "^3.3.1",
     "nodemon": "^2.0.19",
     "pg": "^8.8.0",
-    "pg-copy-streams": "^6.0.4"
+    "pg-copy-streams": "^6.0.4",
+    "portfinder": "^1.0.32"
   },
   "devDependencies": {
+    "chai": "^4.3.7",
+    "chai-http": "^4.4.0",
     "eslint": "^8.42.0",
     "eslint-config-gbv": "^1.0.5",
     "lint-staged": "^13.2.2",
+    "mocha": "^10.2.0",
     "pre-commit": "^1.2.2",
     "standard-readme": "^2.0.4"
   }

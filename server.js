@@ -51,7 +51,7 @@ app.get(["/occurrences","/api"], async (req, res) => {
 })
 
 // Supported vocabularies
-app.get(["/voc","/api/voc"], async (req, res) => {
+app.get(["/voc","/api/voc", "/occurrences/voc"], async (req, res) => {
   res.json(schemes)
 })
 

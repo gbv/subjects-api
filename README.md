@@ -163,7 +163,7 @@ This endpoint returns the same information as [/occurrences](#get-occurrences) e
 
 Returns an array of supported vocabularies as [JSKOS Concept Schemes](https://gbv.github.io/jskos/jskos.html#concept-schemes).
 
-There is a deprecated alias at `/api/voc` to be removed soon. 
+There are deprecated aliases at `/api/voc` and `/occurrences/voc` (expected by cocoda-sdk) to be removed soon.
 
 ### GET /databases
 

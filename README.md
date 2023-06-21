@@ -17,6 +17,7 @@ This API can be used to query how a concept or combination of concepts is used i
   - [GET /subjects](#get-subjects)
   - [GET /records](#get-records)
   - [GET /occurrences](#get-occurrences)
+  - [GET /occurrences/voc](#get-occurrences-voc)
   - [GET /links](#get-links)
   - [GET /voc](#get-voc)
   - [GET /databases](#get-databases)
@@ -139,6 +140,10 @@ Occurrences contain deep links into K10plus catalog for selected vocabularies.
 
 There is a deprecated alias at `/api` to be removed soon. 
 
+### GET /occurrences/voc
+
+Alias for [GET /voc](#get-voc) to support clients that only know about Occurrences API by its base URL `/occurrences`.
+
 ### GET /links
 
 *Not implemented yet, see <https://github.com/gbv/subjects-api/issues/44>.*
@@ -163,7 +168,7 @@ This endpoint returns the same information as [/occurrences](#get-occurrences) e
 
 Returns an array of supported vocabularies as [JSKOS Concept Schemes](https://gbv.github.io/jskos/jskos.html#concept-schemes).
 
-There are deprecated aliases at `/api/voc` and `/occurrences/voc` (expected by cocoda-sdk) to be removed soon.
+There is a deprecated alias at `/api/voc` to be removed soon and a stable alias at [`/occurrences/voc`](#get-occurrences-voc).
 
 ### GET /databases
 

@@ -3,9 +3,14 @@
 <!-- [![Test](https://github.com/gbv/jskos-server/actions/workflows/test.yml/badge.svg)](https://github.com/gbv/jskos-server/actions/workflows/test.yml) -->
 [![GitHub package version](https://img.shields.io/github/package-json/v/gbv/subjects-api.svg?label=version)](https://github.com/gbv/subjects-api)<!-- [![Uptime Robot status](https://img.shields.io/uptimerobot/status/m780815088-08758d5c5193e7b25236cfd7.svg?label=%2Fapi%2F)](https://stats.uptimerobot.com/qZQx1iYZY/780815088) --> [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg)](https://github.com/RichardLitt/standard-readme)
 
-> API to provide subjects and (co-)occurrences based on the K10plus catalog.
+> API to provide information about subject indexing in the K10plus catalog
 
-An occurrence gives information about how (often) a concept (or combination of concepts for co-occurrences) is used in a database.
+This API can be used to query how a concept or combination of concepts is used in records of a database. This basically includes four types of information:
+
+- [subjects](#get-subjects): which concepts a record is index with?
+- [records](#get-records): which records are indexed with a concept?
+- [occurrences](#get-occurrences): number of records indexed with a concept and/or deep link into a catalog to get these records
+- [co-occurrences](#get-occurrences): which concepts are used together with other concepts?
 
 ## Table of Contents
 
@@ -14,6 +19,8 @@ An occurrence gives information about how (often) a concept (or combination of c
   - [Backends](#backends)
 - [Usage](#usage)
 - [API](#api)
+  - [GET /subjects](#get-subjects)
+  - [GET /records](#get-records)
   - [GET /occurrences](#get-occurrences)
   - [GET /voc](#get-voc)
   - [GET /databases](#get-databases)
@@ -100,6 +107,23 @@ Requires `DATABASE` set to URL of SPARQL endpoint. Optionally configure a named 
 
 ## API
 
+### GET /subjects
+
+*Not implemented yet, see <https://github.com/gbv/subjects-api/issues/41>.*
+
+Returns a (possibly empty) array of [JSKOS Concepts](https://gbv.github.io/jskos/jskos.html#concepts) a record is indexed with. The special value `null` can be included as last array element to indicate that more subjects may exist.
+
+**Query parameters:**
+
+- `record` - URIs of records, separated by `|`
+- `scheme` - URIs of concept schemes, separated by `|`. The default value `*` can be used to include all concept schemes.
+
+This endpoint returns the same information as [/occurrences](#get-occurrences) endpoint with query parameter `record` and `scheme` (parameter `member` not set) but with different output format (JSKOS Concepts instead of Concept Occurrences).
+
+### GET /records
+
+*Not implemented yet, see <https://github.com/gbv/subjects-api/issues/42>.*
+
 ### GET /occurrences
 
 Returns a (possibly empty) array of [JSKOS Concept Occurrences](https://gbv.github.io/jskos/jskos.html#concept-occurrences). Depending on query parameters the result consists of:
@@ -113,7 +137,7 @@ Occurrences contain deep links into K10plus catalog for selected vocabularies.
 **Query parameters:**
 
 - `member` - URI of a concept from supported vocabularies
-- `record` - URI of a K10plus record
+- `record` - URI of a record
 - `scheme` - URI of a target concept scheme (when given, co-occurrences are returned; when value `*` is given, all supported target schemes are used)
 - `threshold` - a minimum threshold for co-occurrences to be included
 

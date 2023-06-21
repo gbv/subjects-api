@@ -39,8 +39,10 @@ for (let name of ["schemesFile","linksFile"]) {
   }
 }
 
-config.schemes = JSON.parse(fs.readFileSync(config.schemesFile)).map(scheme => new jskos.ConceptScheme(scheme))
-export const links = JSON.parse(fs.readFileSync(config.linksFile))
+const readJSON = file => JSON.parse(fs.readFileSync(file))
+
+config.schemes = readJSON(config.schemesFile).map(scheme => new jskos.ConceptScheme(scheme))
+export const links = readJSON(config.linksFile)
 
 // Supported databases (only K10plus so far)
 export const databases = [{

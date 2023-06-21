@@ -5,12 +5,7 @@
 
 > API to provide information about subject indexing in the K10plus catalog
 
-This API can be used to query how a concept or combination of concepts is used in records of a database. This basically includes four types of information:
-
-- [subjects](#get-subjects): which concepts a record is index with?
-- [records](#get-records): which records are indexed with a concept?
-- [occurrences](#get-occurrences): number of records indexed with a concept and/or deep link into a catalog to get these records
-- [co-occurrences](#get-occurrences): which concepts are used together with other concepts?
+This API can be used to query how a concept or combination of concepts is used in records of a database. This basically includes: which concepts a record is index with ([subjects](#get-subjects)), which records have been indexed with a concept ([records](#get-records)), the number of records indexed with a concept and/or a deep link into a catalog to get these records ([occurrences](#get-occurrences), [links](#get-links)), and which concepts are used together with other concepts ([co-occurrences](#get-occurrences)).
 
 ## Table of Contents
 
@@ -22,6 +17,7 @@ This API can be used to query how a concept or combination of concepts is used i
   - [GET /subjects](#get-subjects)
   - [GET /records](#get-records)
   - [GET /occurrences](#get-occurrences)
+  - [GET /links](#get-links)
   - [GET /voc](#get-voc)
   - [GET /databases](#get-databases)
   - [GET /status](#get-status)
@@ -142,6 +138,26 @@ Occurrences contain deep links into K10plus catalog for selected vocabularies.
 - `threshold` - a minimum threshold for co-occurrences to be included
 
 There is a deprecated alias at `/api` to be removed soon. 
+
+### GET /links
+
+*Not implemented yet, see <https://github.com/gbv/subjects-api/issues/44>.*
+
+Return a list if deep links into database to list all records indexed with a given concept.
+
+**Query parameters:**
+
+- `subject` - URIs of a concepts
+
+**Return format:**
+
+JSON Array of objects, each with:
+
+- `url`
+- `label` (name of the database)
+- `description` (optional)
+
+This endpoint returns the same information as [/occurrences](#get-occurrences) endpoint with query parameter `subject` instead of `member` but a different return format and no number of records.
 
 ### GET /voc
 

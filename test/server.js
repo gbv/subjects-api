@@ -18,10 +18,16 @@ describe("server", () => {
         assert.equal(res.status,200)
         assert.ok(res.body.ok)
       }))
-  it("/voc return vocabularies",
+  it("/voc should return vocabularies",
     () => chai.request(app).get("/voc")
       .then(res => {
         assert.equal(res.status,200)
         assert.equal(res.body.length,14)
+      }))
+  it("/databases should return databases",
+    () => chai.request(app).get("/databases")
+      .then(res => {
+        assert.equal(res.status,200)
+        assert.equal(res.body.length,1)
       }))
 })

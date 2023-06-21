@@ -60,6 +60,7 @@ app.get("/databases", async (req, res) => {
   res.json(databases)
 })
 
+// API status
 app.get("/status", async (req, res) => {
   try {
     const metadata = await backend.metadata({ counts: false })

@@ -37,7 +37,7 @@ export class OccurrencesService {
     if (query.scheme) {
       let otherScheme = null
       if (query.scheme != "*") {
-        otherScheme = this.schemes.find(s => jskos.compare(s, { uri: query.scheme }))
+        otherScheme = this.getScheme(query.scheme)
         if (!otherScheme) {
           return []
         }
@@ -49,49 +49,45 @@ export class OccurrencesService {
     }
   }
 
+  getScheme(uri) {
+    return this.schemes.find(scheme => jskos.compare(scheme, { uri }))
+  }
+
   async subjects(query) {
-    if (!query.record?.startsWith("http://uri.gbv.de/document/opac-de-627:ppn:")) {
-      return []
-    }
-    const ppn = query.record.split(":").pop()
+    const ppns = query.record?.split("|")
+      .filter(uri => uri.startsWith("http://uri.gbv.de/document/opac-de-627:ppn:"))
+      .map(uri => uri.split(":").pop())
 
-    var result = await this.backend.subjects({ ppn })
-
-    // expand backend result to full JSKOS concepts (TODO: backend may return full JSKOS concept)
-    result = result.map(c => {
-      const scheme = this.schemes.findByVOC(c.voc)
-      if (scheme) {
-        if (c.uri) {
-          const notation = scheme.notationFromUri(c.uri)
-          return {
-            uri: c.uri,
-            inScheme: [{uri:scheme.uri}],
-            ...(notation && {notation: [notation]}),
+    const schemes = (!query.scheme || query.scheme === "*") ? [] : query.scheme.split("|")
+     
+    const result = []
+    for (let ppn of ppns) {
+      const concepts = await this.backend.subjects({ ppn })
+      // expand backend result to full JSKOS concepts (TODO: backend may return full JSKOS concept)
+      concepts.map(c => {
+        const scheme = this.schemes.findByVOC(c.voc)
+        if (scheme) {
+          if (c.uri) {
+            const notation = scheme.notationFromUri(c.uri)
+            return {
+              uri: c.uri,
+              inScheme: [{uri:scheme.uri}],
+              ...(notation && {notation: [notation]}),
+            }
+          } else if (c.notation) {
+            return scheme.conceptFromNotation(c.notation, { inScheme: true })
           }
-        } else if (c.notation) {
-          return scheme.conceptFromNotation(c.notation, { inScheme: true })
         }
-      }
-    }).filter(Boolean)
-
-    // optionally filter concepts
-    if (query.member) {
-      result = result.filter(c => c.uri === query.member)
-    }
-    if (query.scheme && query.scheme != "*") {
-      result = result.filter(c => c.inScheme[0].uri === query.scheme)
+      }).filter(Boolean).filter(c => {
+        if (schemes.length) {
+          return schemes.indexOf(c.inScheme[0].uri) >= 0
+        } else {
+          return c
+        }
+      }).forEach(c => result.push(c))
     }
 
-    // turn concepts into occurrences
-    const modified = await this.modified()
-    const { database, links } = this
-    return result.map(c => {
-      const occ = { memberSet: [c], database, modified }
-      if (links.templateRecord) {
-        occ.url = links.templateRecord.replace("{ppn}",encodeURI(ppn))
-      }
-      return occ
-    })
+    return result
   }
 
   async occurrences({ member, memberScheme }) {

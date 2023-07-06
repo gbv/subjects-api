@@ -106,8 +106,6 @@ Requires `DATABASE` set to URL of SPARQL endpoint. Optionally configure a named 
 
 ### GET /subjects
 
-*Not implemented yet, see <https://github.com/gbv/subjects-api/issues/41>.*
-
 Returns a (possibly empty) array of [JSKOS Concepts](https://gbv.github.io/jskos/jskos.html#concepts) a record is indexed with. The special value `null` can be included as last array element to indicate that more subjects may exist.
 
 **Query parameters:**

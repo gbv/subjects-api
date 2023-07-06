@@ -45,9 +45,13 @@ app.get("/", (req, res) => {
   res.render("index", { ...config })
 })
 
-// Delegate main API route to OccurrencesService
+// Delegate main API routes to OccurrencesService
 app.get(["/occurrences","/api"], async (req, res) => {
   res.json(await service.request(req.query))
+})
+
+app.get("/subjects", async (req, res) => {
+  res.json(await service.subjects(req.query))
 })
 
 // Supported vocabularies

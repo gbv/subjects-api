@@ -54,7 +54,7 @@ export class OccurrencesService {
   }
 
   async subjects(query) {
-    const ppns = query.record?.split("|")
+    const ppns = (query.record || "").split("|")
       .filter(uri => uri.startsWith("http://uri.gbv.de/document/opac-de-627:ppn:"))
       .map(uri => uri.split(":").pop())
 

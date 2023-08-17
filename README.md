@@ -119,6 +119,8 @@ This endpoint returns the same information as [/occurrences](#get-occurrences) e
 
 Returns an array of records with given subject.
 
+Return format is *experimental*
+
 **Query parameters**:
 
 - `subjects` - URI of a concept from supported vocabularies

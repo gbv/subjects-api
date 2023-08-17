@@ -54,6 +54,10 @@ app.get("/subjects", async (req, res) => {
   res.json(await service.subjects(req.query))
 })
 
+app.get("/records", async (req, res) => {
+  res.json(await service.records(req.query))
+})
+ 
 // Supported vocabularies
 app.get(["/voc","/api/voc", "/occurrences/voc"], async (req, res) => {
   res.json(schemes)

@@ -46,6 +46,11 @@ CREATE TABLE metadata (
     return this.db.prepare("SELECT voc, notation FROM subjects WHERE ppn = ?").all([ppn])
   }
 
+  async records({scheme, notation, limit}) { 
+    limit = limit > 0 && limit <= 100 ? limit : 10
+    return this.db.prepare("SELECT DISTINCT ppn FROM subjects WHERE voc = ? AND notation = ? LIMIT ?").all([scheme,notation,limit])
+  }
+
   async updateRecord(ppn, rows=[]) {
     const deleteAll = this.db.prepare("DELETE FROM subjects WHERE ppn = ?")
     const deleteOne = this.db.prepare("DELETE FROM subjects WHERE ppn = @ppn AND voc = @voc")

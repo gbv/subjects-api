@@ -90,6 +90,21 @@ export class OccurrencesService {
     return result
   }
 
+  async records({ subject, limit }) { // TODO: format
+    subject = (subject || "").split("|").map(uri => {
+      const scheme = this.schemes.findByConceptUri(uri)
+      return scheme ? { scheme: scheme.VOC, notation: scheme.notationFromUri(uri) } : null
+    }).filter(s => s && s.scheme && s.notation)
+
+    if (subject.length) {
+      const { scheme, notation } = subject[0]
+      const result = await this.backend.records({ scheme, notation, limit })
+      return result.map(({ppn}) => `http://uri.gbv.de/document/opac-de-627:ppn:${ppn}`)
+    } else {
+      return []
+    }
+  }
+
   async occurrences({ member, memberScheme }) {
     const notation = memberScheme.notationFromUri(member)
     const result = await this.backend.occurrences({ scheme: memberScheme, notation })

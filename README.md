@@ -117,7 +117,13 @@ This endpoint returns the same information as [/occurrences](#get-occurrences) e
 
 ### GET /records
 
-*Not implemented yet, see <https://github.com/gbv/subjects-api/issues/42>.*
+Returns an array of records with given subject.
+
+**Query parameters**:
+
+- `subjects` - URI of a concept from supported vocabularies
+- `limit` - maximum number of records to return (10 by default)
+- `format` - return format (not supported yet)
 
 ### GET /occurrences
 

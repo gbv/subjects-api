@@ -134,22 +134,25 @@ export class OccurrencesService {
     const { schemes, links, database } = this
 
     return result.map(({ freq, concept, voc, notation }) => {
+      // We can't override `otherScheme` here because if it's not given in the request, 
+      // it will stay the same even if there are concepts of multiple schemes in the result set.
+      let targetScheme = otherScheme
       if (concept) { // backend returns full JSKOS concept
-        if (!otherScheme) {
-          otherScheme = schemes.findByUri(concept.inScheme[0].uri)
+        if (!targetScheme) {
+          targetScheme = schemes.findByUri(concept.inScheme[0].uri)
         }
-        notation = otherScheme.notationFromUri(concept.uri)
+        notation = targetScheme.notationFromUri(concept.uri)
       } else { // backend returns voc and notation to build concept from
-        if (!otherScheme) {
-          otherScheme = schemes.findByVOC(voc)
+        if (!targetScheme) {
+          targetScheme = schemes.findByVOC(voc)
         }
-        const uri = otherScheme?.uriFromNotation(notation)
+        const uri = targetScheme?.uriFromNotation(notation)
         if (!uri) {
           return null
         }
         concept = {
           uri,
-          inScheme: [{ uri: otherScheme.uri }],
+          inScheme: [{ uri: targetScheme.uri }],
         }
       }
 
@@ -165,8 +168,8 @@ export class OccurrencesService {
         modified,
         count: parseInt(freq) || 0,
       }
-      if (links.templateCoOccurrences && memberScheme.IKT && otherScheme?.IKT) {
-        entry.url = links.templateCoOccurrences.replace("{notation1}",encodeURI(notation)).replace("{notation2}",encodeURI(notation)).replace("{ikt1}", memberScheme.IKT).replace("{ikt2}", otherScheme.IKT)
+      if (links.templateCoOccurrences && memberScheme.IKT && targetScheme?.IKT) {
+        entry.url = links.templateCoOccurrences.replace("{notation1}", encodeURI(notation)).replace("{notation2}", encodeURI(notation)).replace("{ikt1}", memberScheme.IKT).replace("{ikt2}", targetScheme.IKT)
       }
       return entry
     }).filter(Boolean)

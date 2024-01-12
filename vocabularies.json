@@ -130,7 +130,7 @@
       "http://www.wikidata.org/entity/Q29938469"
     ],
     "namespace": "http://uri.gbv.de/terminology/bk/",
-    "notationPattern": "0|1-2|3-4|5|7-8|[0-9]{2}(\\.[0-9]{2})?",
+    "notationPattern": "0|1-2|3-4|5|7-8|[0-9]{2}\\.[0-9]{2}",
     "prefLabel": { "de": "Basisklassifikation", "en": "Basic Classification" },
     "uri": "http://bartoc.org/en/node/18785"
   },
@@ -148,5 +148,33 @@
     "notationPattern": "(LD,)?[A-Z]([A-Z]( [0-9]+([a-z]|\\.[0-9]+)?( [A-Z][0-9]*)?)?)?( - [A-Z]([A-Z]( [0-9]+([a-z]|\\.[0-9]+)?( [A-Z][0-9]*)?)?)?)?",
     "prefLabel": { "de": "Regensburger Verbundklassifikation", "en": "Regensburger Association Classification" },
     "uri": "http://bartoc.org/en/node/533"
+  },
+  {
+    "ID": "^a(.+)",
+    "PICA": "045N",
+    "SRC": "^A(.+)",
+    "IKT": "8292",
+    "VOC": "fivr",
+    "identifier": [
+      "https://uri.gbv.de/terminology/fivr/"
+    ],
+    "namespace": "https://uri.gbv.de/terminology/fivr/",
+    "notationPattern": "R[A-Z]([0-9][0-9](\\.[0-9][0-9])?)?",
+    "prefLabel": { "de": "FIV-Regionalklassifikation" },
+    "uri": "http://bartoc.org/en/node/20447"
+  },
+  {
+    "ID": "^a(.+)",
+    "PICA": "045N/01",
+    "SRC": "^A(.+)",
+    "VOC": "fivs",
+    "IKT": "8292",
+    "identifier": [
+      "https://uri.gbv.de/terminology/fivs/"
+    ],
+    "namespace": "https://uri.gbv.de/terminology/fivs/",
+    "notationPattern": "S[A-Z]([0-9][0-9](\\.[0-9][0-9])?)?",
+    "prefLabel": { "de": "FIV-Sachklassifikation" },
+    "uri": "http://bartoc.org/en/node/20446"
   }
 ]

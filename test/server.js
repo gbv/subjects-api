@@ -22,7 +22,7 @@ describe("server", () => {
     () => chai.request(app).get("/voc")
       .then(res => {
         assert.equal(res.status,200)
-        assert.equal(res.body.length,14)
+        assert.equal(res.body.length,16)
       }))
   it("/databases should return databases",
     () => chai.request(app).get("/databases")

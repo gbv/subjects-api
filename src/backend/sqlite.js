@@ -92,7 +92,9 @@ CREATE TABLE metadata (
     this.db.exec("DELETE FROM subjects;")
     const insert = this.db.prepare("INSERT INTO subjects VALUES (@ppn, @voc, @notation)")
     const insertMany = this.db.transaction((data) => {
-      for (const row of data) insert.run(row)
+      for (const row of data) {
+        insert.run(row)
+      }
     })
     return new Promise((resolve, reject) => {
       let results = []

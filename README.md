@@ -17,7 +17,7 @@ This API can be used to query how a concept or combination of concepts is used i
   - [GET /subjects](#get-subjects)
   - [GET /records](#get-records)
   - [GET /occurrences](#get-occurrences)
-  - [GET /occurrences/voc](#get-occurrences-voc)
+  - [GET /occurrences/voc](#get-occurrencesvoc)
   - [GET /links](#get-links)
   - [GET /voc](#get-voc)
   - [GET /databases](#get-databases)
@@ -28,7 +28,7 @@ This API can be used to query how a concept or combination of concepts is used i
 
 ## Install
 
-Requires Node.js v16 or newer.
+Requires Node.js v18 or newer.
 
 ```bash
 git clone https://github.com/gbv/subjects-api.git

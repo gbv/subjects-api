@@ -1,0 +1,5 @@
+subjects.db*
+*.tsv
+node_modules/
+.env
+.docker/data*

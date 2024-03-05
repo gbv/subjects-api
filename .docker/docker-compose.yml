@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  subjects-api:
+    build:
+      context: ..
+      dockerfile: .docker/Dockerfile
+    volumes:
+      - ./data:/data
+    environment:
+      - NODE_ENV=production
+    ports:
+      - 3141:3141
+    restart: unless-stopped

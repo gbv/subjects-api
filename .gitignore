@@ -4,6 +4,7 @@ node_modules/
 
 *.tsv
 subjects.db*
+.docker/data*
 
 npm-debug.log*
 yarn-debug.log*

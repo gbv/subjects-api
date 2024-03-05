@@ -14,4 +14,6 @@ RUN mkdir /data
 # Use pm2 to run app
 RUN npm i -g pm2
 
-CMD .docker/entrypoint.sh
+ENV DATABASE=/data/subjects.db
+
+CMD pm2-runtime server.js

@@ -39,24 +39,22 @@ services:
 mkdir -p ./data
 ```
 
-3. Import the data from TSV:
-
-TODO
-
-<!-- 
-```bash
-# Move subjects TSV file to mounted data folder
-cp subjects.tsv data/subjects.tsv
-docker compose run -it subjects-api npm run import -- /data/subjects.tsv
-``` -->
-
-4. Start the application:
+3. Start the application:
 
 ```bash
 docker compose up -d
 ```
 
 This will create and start a subjects-api container running under host (and guest) port 3141. See [Configuration](#configuration) on how to configure it.
+
+4. Import the data from TSV:
+
+```bash
+# Move/copy subjects TSV file to mounted data folder
+cp subjects.tsv data/subjects.tsv
+# This can take a loooong time
+docker compose exec -it subjects-api npm run import -- --full /data/subjects.tsv
+```
 
 You can now access the application under `http://localhost:3141`.
 

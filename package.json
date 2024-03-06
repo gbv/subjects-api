@@ -1,6 +1,6 @@
 {
   "name": "subjects-api",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "API to provide co-occurrences based on the K10plus catalog.",
   "main": "server.js",
   "type": "module",

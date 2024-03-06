@@ -127,13 +127,13 @@ export class OccurrencesService {
   }
 
   async coOccurrences({member, memberScheme, otherScheme, threshold}) {
-    const notation = memberScheme.notationFromUri(member)
+    const sourceNotation = memberScheme.notationFromUri(member)
 
-    const result = await this.backend.coOccurrences({scheme: memberScheme, notation, otherScheme, threshold})
+    const result = await this.backend.coOccurrences({scheme: memberScheme, notation: sourceNotation, otherScheme, threshold})
     const modified = await this.modified()
     const { schemes, links, database } = this
 
-    return result.map(({ freq, concept, voc, notation }) => {
+    return result.map(({ freq, concept, voc, notation: targetNotation }) => {
       // We can't override `otherScheme` here because if it's not given in the request, 
       // it will stay the same even if there are concepts of multiple schemes in the result set.
       let targetScheme = otherScheme
@@ -141,12 +141,12 @@ export class OccurrencesService {
         if (!targetScheme) {
           targetScheme = schemes.findByUri(concept.inScheme[0].uri)
         }
-        notation = targetScheme.notationFromUri(concept.uri)
+        targetNotation = targetScheme.notationFromUri(concept.uri)
       } else { // backend returns voc and notation to build concept from
         if (!targetScheme) {
           targetScheme = schemes.findByVOC(voc)
         }
-        const uri = targetScheme?.uriFromNotation(notation)
+        const uri = targetScheme?.uriFromNotation(targetNotation)
         if (!uri) {
           return null
         }
@@ -169,7 +169,7 @@ export class OccurrencesService {
         count: parseInt(freq) || 0,
       }
       if (links.templateCoOccurrences && memberScheme.IKT && targetScheme?.IKT) {
-        entry.url = links.templateCoOccurrences.replace("{notation1}", encodeURI(notation)).replace("{notation2}", encodeURI(notation)).replace("{ikt1}", memberScheme.IKT).replace("{ikt2}", targetScheme.IKT)
+        entry.url = links.templateCoOccurrences.replace("{notation1}", encodeURI(sourceNotation)).replace("{notation2}", encodeURI(targetNotation)).replace("{ikt1}", memberScheme.IKT).replace("{ikt2}", targetScheme.IKT)
       }
       return entry
     }).filter(Boolean)

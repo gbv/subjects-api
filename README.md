@@ -56,12 +56,7 @@ Then full the backend database (SQLite by default) with subject indexing data fr
 
 #### SQLite
 
-Requires to start the application once to create SQLite database file under `subjects.db`. Then download data from <https://doi.org/10.5281/zenodo.7016625> (given as tabulator separated file table with columns PPN, vocabulary key, and notation) and import into SQLite file:
-
-~~~~
-URL=$(curl -sL "https://zenodo.org/api/records/7016625" | jq -r '.files[]|select(.key|endswith(".tsv.gz"))|.links.self')
-curl -sL $URL | zcat | sqlite3 subjects.db -cmd ".mode tabs" ".import /dev/stdin subjects"
-~~~~
+Requires to start the application once to create SQLite database file under `subjects.db`. 
 
 #### SPARQL (experimental)
 
@@ -77,10 +72,6 @@ GRAPH=https://uri.gbv.de/graph/kxp-subjects     # optional
 
 Requires PostgreSQL database. It turned out performance of SQLite is better, for this reasons this backend is not developed further.
 
-#### SRU (not implemented yet)
-
-Requires a SRU-API to query from so live data can be returned.
-
 ## Usage
 
 ```bash
@@ -88,7 +79,8 @@ npm run start
 ```
 
 Some backends allow to import data from a headerless TSV file with three
-columns for PPN, vocabulary id (`VOC`), and notation:
+columns for PPN, vocabulary id (`VOC`), and notation. Regular dumps of K10plus
+are available from <https://doi.org/10.5281/zenodo.7016625>.
 
 ```bash
 npm run import -- subjects.tsv
@@ -97,6 +89,13 @@ npm run import -- subjects.tsv
 Option `--full` replaces the existing backend data, otherwise the data is added
 to existing subjects data.  Option `--modified` can be used to set the
 modification date (timestamp of file by default).
+
+Import into SQLite backend is also possible directly, but not recommended:
+
+~~~~
+URL=$(curl -sL "https://zenodo.org/api/records/7016625" | jq -r '.files[]|select(.key|endswith(".tsv.gz"))|.links.self')
+curl -sL $URL | zcat | sqlite3 subjects.db -cmd ".mode tabs" ".import /dev/stdin subjects"
+~~~~
 
 #### SPARQL
 

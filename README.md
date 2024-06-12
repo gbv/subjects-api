@@ -72,6 +72,18 @@ GRAPH=https://uri.gbv.de/graph/kxp-subjects     # optional
 
 Requires PostgreSQL database. It turned out performance of SQLite is better, for this reasons this backend is not developed further.
 
+#### Neo4j
+
+Default configuration:
+
+```env
+BACKEND=Neo4j
+DATABASE=neo4j://localhost
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+```
+
 ## Usage
 
 ```bash

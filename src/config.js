@@ -56,8 +56,9 @@ export const databases = [{
 import SQLiteBackend from "./backend/sqlite.js"
 import PostgreSQLBackend from "./backend/postgres.js"
 import SPARQLBackend from "./backend/sparql.js"
+import Neo4jBackend from "./backend/neo4j.js"
 
-const backends = [SQLiteBackend, PostgreSQLBackend, SPARQLBackend]
+const backends = [SQLiteBackend, PostgreSQLBackend, SPARQLBackend,Neo4jBackend]
 const backendClass = backends.find(b => b.name === `${config.backend}Backend`)
 
 if (!backendClass) {

@@ -41,8 +41,6 @@
     "neo4j-driver-lite": "^5.21.0",
     "node-fetch": "^3.3.2",
     "nodemon": "^3.1.0",
-    "pg": "^8.11.3",
-    "pg-copy-streams": "^6.0.6",
     "portfinder": "^1.0.32"
   },
   "devDependencies": {

@@ -1,4 +1,5 @@
 import jskos from "jskos-tools"
+import K10PlusBackend from "./backend/k10plus.js"
 
 export class OccurrencesService {
 
@@ -12,6 +13,9 @@ export class OccurrencesService {
     this.schemes.findByConceptUri = uri => this.schemes.find(s => s.notationFromUri(uri))
     this.schemes.findByUri = uri => this.schemes.find(s => s.uri === uri)
     this.schemes.findByVOC = voc => this.schemes.find(s => s.VOC === voc)
+
+    // Initialize live database
+    this.liveBackend = new K10PlusBackend()
   }
 
   async modified() {
@@ -62,7 +66,8 @@ export class OccurrencesService {
      
     const result = []
     for (let ppn of ppns) {
-      const concepts = await this.backend.subjects({ ppn })
+      // TODO: Database is part of `record` URI and should be used in live backend
+      const concepts = await (query.live !== "1" ? this.backend : this.liveBackend).subjects({ ppn })
       // expand backend result to full JSKOS concepts (TODO: backend may return full JSKOS concept)
       concepts.map(c => {
         const scheme = this.schemes.findByVOC(c.voc)

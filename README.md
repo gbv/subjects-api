@@ -58,6 +58,15 @@ Then full the backend database (SQLite by default) with subject indexing data fr
 
 Requires to start the application once to create SQLite database file under `subjects.db`. 
 
+#### K10Plus
+
+Retrieves bibliographic records in [K10plus Format](https://format.gbv.de/pica/k10plus) via unAPI.
+
+~~~
+BACKEND=K10Plus
+DATABASE=https://unapi.k10plus.de/
+~~~
+
 #### SPARQL (experimental)
 
 Requires a SPARQL-Endpoint, including SPARQL Update and SPARQL Graph Store Protocol for write access. Only tested with Apache Jena Fuseki.

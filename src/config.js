@@ -51,6 +51,7 @@ export const databases = [{
     en: "K10plus Union Catalogue",
     de: "K10plus-Verbundkatalog",
   },
+  dbkey: "opac-de-627"
 }]
 
 import SQLiteBackend from "./backend/sqlite.js"

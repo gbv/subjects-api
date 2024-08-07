@@ -54,15 +54,16 @@ export class OccurrencesService {
   }
 
   async subjects(query) {
+    const dbkey = this.database.dbkey
     const ppns = (query.record || "").split("|")
-      .filter(uri => uri.startsWith("http://uri.gbv.de/document/opac-de-627:ppn:"))
+      .filter(uri => uri.startsWith(`http://uri.gbv.de/document/${dbkey}:ppn:`))
       .map(uri => uri.split(":").pop())
 
     const schemes = (!query.scheme || query.scheme === "*") ? [] : query.scheme.split("|")
      
     const result = []
     for (let ppn of ppns) {
-      const concepts = await this.backend.subjects({ ppn })
+      const concepts = await this.backend.subjects({ dbkey, ppn })
       // expand backend result to full JSKOS concepts (TODO: backend may return full JSKOS concept)
       concepts.map(c => {
         const scheme = this.schemes.findByVOC(c.voc)

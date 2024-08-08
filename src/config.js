@@ -51,14 +51,15 @@ export const databases = [{
     en: "K10plus Union Catalogue",
     de: "K10plus-Verbundkatalog",
   },
-  dbkey: "opac-de-627"
+  dbkey: "opac-de-627",
 }]
 
 import SQLiteBackend from "./backend/sqlite.js"
 import SPARQLBackend from "./backend/sparql.js"
 import Neo4jBackend from "./backend/neo4j.js"
+import K10PlusBackend from "./backend/k10plus.js"
 
-const backends = [SQLiteBackend, SPARQLBackend, Neo4jBackend]
+const backends = [SQLiteBackend, SPARQLBackend, Neo4jBackend, K10PlusBackend]
 const backendClass = backends.find(b => b.name === `${config.backend}Backend`)
 
 if (!backendClass) {

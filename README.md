@@ -12,7 +12,12 @@ This API can be used to query how a concept or combination of concepts is used i
 - [Install](#install)
   - [Configuration](#configuration)
   - [Backends](#backends)
+    - [SQLite](#sqlite)
+    - [K10Plus](#k10plus)
+    - [SPARQL (experimental)](#sparql-experimental)
+    - [Neo4j](#neo4j)
 - [Usage](#usage)
+    - [SPARQL](#sparql)
 - [API](#api)
   - [GET /subjects](#get-subjects)
   - [GET /records](#get-records)
@@ -33,7 +38,7 @@ Requires Node.js v18 or newer.
 ```bash
 git clone https://github.com/gbv/subjects-api.git
 cd subjects-api
-npm i
+npm ci
 ```
 
 ### Configuration

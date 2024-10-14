@@ -14,10 +14,9 @@ This API can be used to query how a concept or combination of concepts is used i
   - [Backends](#backends)
     - [SQLite](#sqlite)
     - [K10Plus](#k10plus)
-    - [SPARQL (experimental)](#sparql-experimental)
-    - [Neo4j](#neo4j)
-- [Usage](#usage)
     - [SPARQL](#sparql)
+    - [Neo4j (experimental)](#neo4j)
+- [Usage](#usage)
 - [API](#api)
   - [GET /subjects](#get-subjects)
   - [GET /records](#get-records)
@@ -72,7 +71,7 @@ BACKEND=K10Plus
 DATABASE=https://unapi.k10plus.de/
 ~~~
 
-#### SPARQL (experimental)
+#### SPARQL
 
 Requires a SPARQL-Endpoint, including SPARQL Update and SPARQL Graph Store Protocol for write access. Only tested with Apache Jena Fuseki.
 
@@ -82,7 +81,14 @@ DATABASE=http://localhost:3030/k10plus
 GRAPH=https://uri.gbv.de/graph/kxp-subjects     # optional
 ~~~
 
-#### Neo4j
+The RDF data model consists of two properties `dct:subject` and `skos:inScheme`:
+
+~~~ttl
+?record  <http://purl.org/dc/terms/subject> ?subject .
+?subject <http://www.w3.org/2004/02/skos/core#inScheme> ?voc .
+~~~
+
+#### Neo4j (experimental)
 
 Default configuration:
 
@@ -118,10 +124,6 @@ Import into SQLite backend is also possible directly, but not recommended:
 URL=$(curl -sL "https://zenodo.org/api/records/7016625" | jq -r '.files[]|select(.key|endswith(".tsv.gz"))|.links.self')
 curl -sL $URL | zcat | sqlite3 subjects.db -cmd ".mode tabs" ".import /dev/stdin subjects"
 ~~~~
-
-#### SPARQL
-
-Requires `DATABASE` set to URL of SPARQL endpoint. Optionally configure a named graph with `GRAPH`.
 
 ## API
 

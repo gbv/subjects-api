@@ -1,9 +1,10 @@
 import fs from "fs"
 import csv from "csv-parser"
-import { connect } from "../src/config.js"
+import { config } from "../src/config.js"
+import { connect } from "../src/backend.js"
 
 export async function importSubjects({file, modified, full}) {
-  const backend = await connect()
+  const backend = await connect(config)
   const stream = fs.createReadStream(file)
   const csvTransform = csv({
     separator: "\t",

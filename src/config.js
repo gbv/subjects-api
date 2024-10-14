@@ -53,25 +53,3 @@ export const databases = [{
   },
   dbkey: "opac-de-627",
 }]
-
-import SQLiteBackend from "./backend/sqlite.js"
-import SPARQLBackend from "./backend/sparql.js"
-import Neo4jBackend from "./backend/neo4j.js"
-import K10PlusBackend from "./backend/k10plus.js"
-
-const backends = [SQLiteBackend, SPARQLBackend, Neo4jBackend, K10PlusBackend]
-const backendClass = backends.find(b => b.name === `${config.backend}Backend`)
-
-if (!backendClass) {
-  console.error(`${config.backend} backend not found.`)
-  process.exit(1)
-}
-
-export const backend = new backendClass()
-// Connect immediately, but clients will still need to await connect()
-const backendConnectPromise = backend.connect(config)
-export const connect = async () => {
-  await backendConnectPromise
-  console.log(`Configured ${config.schemes.length} vocabularies from ${config.schemesFile}. Using ${backend.name}.`)
-  return backend
-}

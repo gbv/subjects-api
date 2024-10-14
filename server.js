@@ -1,13 +1,14 @@
 import portfinder from "portfinder"
 
-import { connect, config, links, databases } from "./src/config.js"
+import { config, links, databases } from "./src/config.js"
+import { createBackend } from "./src/backend.js"
 import { SubjectsService } from "./src/service.js"
 const { schemes } = config
 
 import express from "express"
 
 // Connect to backend
-const backend = await connect()
+const backend = await createBackend(config)
 
 // this will likely warm up the backend cache as well
 // TODO: This is very slow and delays startup by multiple minutes. Find a better solution.

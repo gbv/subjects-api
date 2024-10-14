@@ -1,7 +1,7 @@
 import portfinder from "portfinder"
 
 import { connect, config, links, databases } from "./src/config.js"
-import { OccurrencesService } from "./src/service.js"
+import { SubjectsService } from "./src/service.js"
 const { schemes } = config
 
 import express from "express"
@@ -14,7 +14,7 @@ const backend = await connect()
 // const { recCount, occCount, vocCount } = await backend.metadata()
 // console.log(`Backend contains ${occCount} occurrences from ${recCount} records with ${vocCount} vocabularies.`)
 
-const service = new OccurrencesService({backend, schemes, links, databases})
+const service = new SubjectsService({backend, schemes, links, databases})
 
 const app = express()
 app.set("json spaces", 2)
@@ -45,7 +45,7 @@ app.get("/", (req, res) => {
   res.render("index", { ...config })
 })
 
-// Delegate main API routes to OccurrencesService
+// Delegate main API routes to SubjectsService
 app.get(["/occurrences","/api"], async (req, res) => {
   res.json(await service.request(req.query))
 })

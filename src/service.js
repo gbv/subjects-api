@@ -1,6 +1,6 @@
 import jskos from "jskos-tools"
 
-export class OccurrencesService {
+export class SubjectsService {
 
   constructor({ backend, schemes, databases, links }) {
     this.backend = backend

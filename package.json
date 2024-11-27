@@ -21,7 +21,8 @@
     "release": "test $(git rev-parse --abbrev-ref HEAD) = dev && git pull && npm test && npm version $SEMVER && npm run --silent yesno && (git push && git checkout main && git merge dev && git push --follow-tags && git checkout dev) || (git tag -d $(git describe --tags) && git reset --hard HEAD~1)",
     "release:patch": "SEMVER=patch npm run release",
     "release:minor": "SEMVER=minor npm run release",
-    "release:major": "SEMVER=major npm run release"
+    "release:major": "SEMVER=major npm run release",
+    "prepare": "husky || true"
   },
   "lint-staged": {
     "**/*.js": [
@@ -31,7 +32,6 @@
       "eslint --fix"
     ]
   },
-  "pre-commit": "test",
   "dependencies": {
     "better-sqlite3": "^11.6.0",
     "csv-parser": "^3.0.0",
@@ -50,9 +50,9 @@
     "chai-http": "^5.1.1",
     "eslint": "~9.14",
     "eslint-config-gbv": "~2.4",
+    "husky": "^9.1.7",
     "lint-staged": "^15.2.10",
     "mocha": "^10.8.2",
-    "pre-commit": "^1.2.2",
     "standard-readme": "^2.0.4",
     "yesno": "^0.4.0"
   }

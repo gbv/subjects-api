@@ -15,7 +15,7 @@ This API can be used to query how a concept or combination of concepts is used i
     - [SQLite](#sqlite)
     - [K10Plus](#k10plus)
     - [SPARQL](#sparql)
-    - [Neo4j (experimental)](#neo4j)
+    - [Neo4j (experimental)](#neo4j-experimental)
 - [Usage](#usage)
 - [API](#api)
   - [GET /subjects](#get-subjects)
@@ -39,6 +39,8 @@ git clone https://github.com/gbv/subjects-api.git
 cd subjects-api
 npm ci
 ```
+
+You can also run Subjects API via [Docker](./.docker/README.md).
 
 ### Configuration
 

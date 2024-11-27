@@ -18,8 +18,6 @@ It is recommended to run the image using [Docker Compose](https://docs.docker.co
 1. Create `docker-compose.yml`:
 
 ```yml
-version: "3"
-
 services:
   subjects-api:
     image: ghcr.io/gbv/subjects-api
@@ -45,15 +43,15 @@ mkdir -p ./data
 docker compose up -d
 ```
 
-This will create and start a subjects-api container running under host (and guest) port 3141. See [Configuration](#configuration) on how to configure it.
+This will create and start a subjects-api container running under host (and guest) port 3141. See [Configuration](#configuration) below on how to configure it.
 
 4. Import the data from TSV:
 
 ```bash
 # Move/copy subjects TSV file to mounted data folder
-cp subjects.tsv data/subjects.tsv
+cp kxp-subjects.tsv data/kxp-subjects.tsv
 # This can take a loooong time
-docker compose exec -it subjects-api npm run import -- --full /data/subjects.tsv
+docker compose exec -it subjects-api npm run import -- --full /data/kxp-subjects.tsv
 ```
 
 You can now access the application under `http://localhost:3141`.
@@ -62,4 +60,4 @@ You can now access the application under `http://localhost:3141`.
 After changing `docker-compose.yml` (e.g. adjusting environment variables), it is necessary to recreate the container to apply changes: `docker compose up -d`
 
 ### Configuration
-The folder `/data` (mounted as `./data` if configured as above) will contain the SQLite database `subjects.db` and related files. You can use environment variables via `environment` to configure subjects-api. Please refer to the [main documentation](../README.md#configuration) for more information and all available options. (Note that paths are always **inside** the container.)
+The folder `/data` inside the container (mounted as `./data` on the host if configured as above) will contain the SQLite database `subjects.db` and related files. You can use environment variables via `environment` to configure subjects-api. Please refer to the [main documentation](../README.md#configuration) for more information and all available options. (Note that paths are always **inside** the container.)

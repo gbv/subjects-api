@@ -127,6 +127,8 @@ URL=$(curl -sL "https://zenodo.org/api/records/7016625" | jq -r '.files[]|select
 curl -sL $URL | zcat | sqlite3 subjects.db -cmd ".mode tabs" ".import /dev/stdin subjects"
 ~~~~
 
+If `vocabularies.json` is updated or replaced, it is necessary to add concept APIs to it via `npm run add-vocabulary-apis` (and commit the changes if necessary).
+
 ## API
 
 ### GET /subjects

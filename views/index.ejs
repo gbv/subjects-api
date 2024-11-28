@@ -197,6 +197,7 @@
     </footer>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/jskos-tools@1/dist/jskos-tools.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cocoda-sdk@2/dist/cocoda-sdk.js"></script>
   <script>
     const ppnInputEl = document.getElementById("ppn-input")
     const ppnSubmitEl = document.getElementById("ppn-submit")
@@ -217,9 +218,11 @@
     let schemes = []
     const schemesPromise = (async () => {
       try {
-        const res = await fetch("./voc")
-        const json = await res.json()
-        schemes = json.map(scheme => {
+        const registry = CDK.cdk.initializeRegistry({
+          provider: "ConceptApi",
+          schemes: "./voc",
+        })
+        schemes = (await registry.getSchemes()).map(scheme => {
           scheme = new jskos.ConceptScheme(scheme)
           scheme.notation = [scheme.VOC.toUpperCase()]
           return scheme
@@ -273,26 +276,66 @@
           subject.inScheme[0] = schemes.find(scheme => jskos.compare(scheme, subject.inScheme[0])) || subject.inScheme[0]
           return subject
         })
-        for (const subject of subjects) {
-          const voc = jskos.notation(subject.inScheme[0]), notation = jskos.notation(subject)
-          const li = document.createElement("li"), notationEl = document.createElement("b")
-          notationEl.appendChild(document.createTextNode(notation))
-          li.appendChild(document.createTextNode(voc + " "))
-          li.appendChild(notationEl)
-          resultsEl.appendChild(li)
-        }
-        if (subjects.length === 0) {
-          const li = document.createElement("li")
-          li.appendChild(document.createTextNode("No results."))
-          resultsEl.appendChild(li)
-        }
+        displayResults(subjects)
         const titleName = (await getTitleName(ppn)) || "Unknown title"
         titleEl.innerText = ppn + ": " + titleName
+        // Add concept data to all subjects
+        await loadConceptData(subjects)
+        displayResults(subjects)
       } catch (error) {
         console.error(error)
         titleEl.innerText = `Error: ${error.message}`
       }
       ppnSubmitEl.disabled = false
+    }
+
+    async function loadConceptData(subjects) {
+      const subjectsByScheme = {}
+      for (const scheme of schemes) {
+        if (scheme.uri && scheme._registry) {
+          subjectsByScheme[scheme.uri] = {
+            scheme,
+            concepts: [],
+          }
+        }
+      }
+      for (const subject of subjects) {
+        const entry = subjectsByScheme[subject.inScheme[0]?.uri]
+        if (!entry) {
+          console.warn(`No registry to load concept data for ${subject.uri}.`)
+          continue
+        }
+        entry.concepts.push(subject)
+      }
+      const results = await Promise.all(Object.values(subjectsByScheme).filter(({ concepts }) => concepts.length).map(({ scheme, concepts }) => {
+        return scheme._registry.getConcepts({ concepts }).catch(() => ([]))
+      }))
+      results.reduce((all, cur) => all.concat(cur), []).forEach(concept => {
+        const subject = subjects.find(s => jskos.compare(s, concept))
+        if (subject) {
+          subject.prefLabel = concept.prefLabel
+        }
+      })
+    }
+
+    function displayResults(subjects) {
+      resultsEl.innerHTML = ""
+      for (const subject of subjects) {
+        const voc = jskos.notation(subject.inScheme[0]), notation = jskos.notation(subject), prefLabel = jskos.prefLabel(subject, { fallbackToUri: false })
+        const li = document.createElement("li"), notationEl = document.createElement("b")
+        notationEl.appendChild(document.createTextNode(notation))
+        li.appendChild(document.createTextNode(voc + " "))
+        li.appendChild(notationEl)
+        if (prefLabel) {
+          li.append(document.createTextNode(" " + prefLabel))
+        }
+        resultsEl.appendChild(li)
+      }
+      if (subjects.length === 0) {
+        const li = document.createElement("li")
+        li.appendChild(document.createTextNode("No results."))
+        resultsEl.appendChild(li)
+      }
     }
   </script>
 </html>

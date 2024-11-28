@@ -6,8 +6,11 @@
     "VOC": "lcc",
     "notationPattern": "[A-Z]{1,3}([0-9]+(\\.[0-9]+)?( *\\.?[A-Z]{0,3}[0-9]*([ -]\\.?[A-Z]{0,3}[0-9]+)?)?( *[0-9]+[a-z]*)?)?",
     "namespace": "http://id.loc.gov/authorities/classification/",
-    "prefLabel": { "en": "Library of Congress Classification" },
-    "uri": "http://bartoc.org/en/node/486"
+    "prefLabel": {
+      "en": "Library of Congress Classification"
+    },
+    "uri": "http://bartoc.org/en/node/486",
+    "API": []
   },
   {
     "ID": "^a(.+)",
@@ -16,8 +19,12 @@
     "VOC": "asb",
     "namespace": "http://uri.gbv.de/terminology/asb/",
     "notationPattern": "[A-Z][a-z]*( [0-9]+)?",
-    "prefLabel": { "de": "Allgemeine Systematik für Öffentliche Bibliotheken", "en": "General Systematic for Public Libraries" },
-    "uri": "http://bartoc.org/en/node/732"
+    "prefLabel": {
+      "de": "Allgemeine Systematik für Öffentliche Bibliotheken",
+      "en": "General Systematic for Public Libraries"
+    },
+    "uri": "http://bartoc.org/en/node/732",
+    "API": []
   },
   {
     "ID": "^a(.+)",
@@ -26,8 +33,16 @@
     "VOC": "ssd",
     "namespace": "http://uri.gbv.de/terminology/ssd/",
     "notationPattern": "[A-Z]+( ([0-9]+)?)?",
-    "prefLabel": { "de": "Systematik der Stadtbibliothek Duisburg" },
-    "uri": "http://bartoc.org/en/node/1051"
+    "prefLabel": {
+      "de": "Systematik der Stadtbibliothek Duisburg"
+    },
+    "uri": "http://bartoc.org/en/node/1051",
+    "API": [
+      {
+        "type": "http://bartoc.org/api-type/jskos",
+        "url": "https://coli-conc.gbv.de/api/"
+      }
+    ]
   },
   {
     "ID": "^a(.+)",
@@ -36,8 +51,11 @@
     "VOC": "sfb",
     "namespace": "http://uri.gbv.de/terminology/sfb/",
     "notationPattern": "[A-Z][A-Za-zä]* [0-9]+(.[0-9]| [A-Z] - [A-Z])?",
-    "prefLabel": { "de": "Systematik für Bibliotheken" },
-    "uri": "http://bartoc.org/en/node/335"
+    "prefLabel": {
+      "de": "Systematik für Bibliotheken"
+    },
+    "uri": "http://bartoc.org/en/node/335",
+    "API": []
   },
   {
     "ID": "^a(.+)",
@@ -46,14 +64,19 @@
     "notationPattern": "[A-Z]( [0-9]+(.?[0-9])?)?",
     "VOC": "kab",
     "namespace": "http://uri.gbv.de/terminology/kab/",
-    "prefLabel": { "de": "Klassifikation für Allgemeinbibliotheken", "en": "Classification for general libraries" },
-    "uri": "http://bartoc.org/en/node/1031"
+    "prefLabel": {
+      "de": "Klassifikation für Allgemeinbibliotheken",
+      "en": "Classification for general libraries"
+    },
+    "uri": "http://bartoc.org/en/node/1031",
+    "API": []
   },
   {
     "ID": "^a(.+)",
     "PICA": "045B/04",
     "SRC": "^A(.+)",
-    "VOC": "ekz"
+    "VOC": "ekz",
+    "API": []
   },
   {
     "ID": "^a(.+)",
@@ -62,8 +85,11 @@
     "VOC": "nlm",
     "namespace": "https://www.nlm.nih.gov/class/",
     "notationPattern": "[A-Z]+ [0-9]+(.[0-9](.[A-Z0-9]+)?)?",
-    "prefLabel": { "en": "National Library of Medicine Classification" },
-    "uri": "http://bartoc.org/en/node/528"
+    "prefLabel": {
+      "en": "National Library of Medicine Classification"
+    },
+    "uri": "http://bartoc.org/en/node/528",
+    "API": []
   },
   {
     "ID": "^7stw/(.+)",
@@ -72,15 +98,33 @@
     "VOC": "stw",
     "namespace": "http://zbw.eu/stw/descriptor/",
     "notationPattern": "[0-9]+-[0-9]",
-    "prefLabel": { "en": "STW Thesaurus for Economics", "de": "Standard Thesaurus Wirtschaft" },
-    "uri": "http://bartoc.org/en/node/313"
+    "prefLabel": {
+      "en": "STW Thesaurus for Economics",
+      "de": "Standard Thesaurus Wirtschaft"
+    },
+    "uri": "http://bartoc.org/en/node/313",
+    "API": [
+      {
+        "type": "http://bartoc.org/api-type/skosmos",
+        "url": "https://zbw.eu/beta/skosmos/stw/"
+      },
+      {
+        "type": "http://bartoc.org/api-type/skosmos",
+        "url": "https://lod.gesis.org/stw/"
+      },
+      {
+        "type": "http://bartoc.org/api-type/skosmos",
+        "url": "https://skosmos.bartoc.org/313/"
+      }
+    ]
   },
   {
     "ID": "^a(.+)",
     "PICA": "045E",
     "SRC": "^A(.+)",
     "VOC": "dnbsgr",
-    "COMMENT": "This mixes multiple systems used in DNB before 2004"
+    "COMMENT": "This mixes multiple systems used in DNB before 2004",
+    "API": []
   },
   {
     "ID": "^a(.+)",
@@ -94,8 +138,25 @@
     ],
     "uriPattern": "http://dewey.info/class/(.+)/e23/",
     "notationPattern": "[0-9]{1,3}|[0-9]{3}\\.[0-9]+",
-    "prefLabel": { "de": "Dewey-Dezimalklassifikation", "en": "Dewey Decimal Classification" },
-    "uri": "http://bartoc.org/en/node/241"
+    "prefLabel": {
+      "de": "Dewey-Dezimalklassifikation",
+      "en": "Dewey Decimal Classification"
+    },
+    "uri": "http://bartoc.org/en/node/241",
+    "API": [
+      {
+        "type": "http://bartoc.org/api-type/jskos",
+        "url": "https://coli-conc.gbv.de/api/"
+      },
+      {
+        "type": "http://bartoc.org/api-type/jskos",
+        "url": "https://bartoc.org/api/"
+      },
+      {
+        "type": "http://bartoc.org/api-type/skosmos",
+        "url": "https://data.ub.uio.no/skosmos/ddc/"
+      }
+    ]
   },
   {
     "ID": "^a(.+)",
@@ -104,8 +165,20 @@
     "VOC": "sdnb",
     "namespace": "http://uri.gbv.de/terminology/sdnb/",
     "notationPattern": "[0-9]([0-9][0-9](\\.[0-9][0-9]?)?)?|[BKS]",
-    "prefLabel": { "de": "Sachgruppen der DNB ab 2004" },
-    "uri": "http://bartoc.org/en/node/20049"
+    "prefLabel": {
+      "de": "Sachgruppen der DNB ab 2004"
+    },
+    "uri": "http://bartoc.org/en/node/20049",
+    "API": [
+      {
+        "type": "http://bartoc.org/api-type/jskos",
+        "url": "https://coli-conc.gbv.de/api/"
+      },
+      {
+        "type": "http://bartoc.org/api-type/mycore",
+        "url": "https://bibliographie.schleswig-holstein.de/api/v2/classifications/SDNB.json"
+      }
+    ]
   },
   {
     "ID": "^7gnd/(.+)",
@@ -115,8 +188,33 @@
     "IKT": "8549",
     "namespace": "https://d-nb.info/gnd/",
     "notationPattern": "[0-9X]+(-[0-9X])?",
-    "prefLabel": { "de": "Gemeinsame Normdatei", "en": "Integrated Authority File" },
-    "uri": "http://bartoc.org/en/node/430"
+    "prefLabel": {
+      "de": "Gemeinsame Normdatei",
+      "en": "Integrated Authority File"
+    },
+    "uri": "http://bartoc.org/en/node/430",
+    "API": [
+      {
+        "type": "http://bartoc.org/api-type/lobid-gnd",
+        "url": "https://lobid.org/gnd/api"
+      },
+      {
+        "type": "http://bartoc.org/api-type/reconciliation",
+        "url": "https://lobid.org/gnd/reconcile/"
+      },
+      {
+        "type": "http://bartoc.org/api-type/sru",
+        "url": "https://services.dnb.de/sru/authorities"
+      },
+      {
+        "type": "http://bartoc.org/api-type/webservice",
+        "url": "https://hub.culturegraph.org/entityfacts"
+      },
+      {
+        "type": "http://bartoc.org/api-type/reconciliation",
+        "url": "https://reconcile.gnd.network/"
+      }
+    ]
   },
   {
     "ID": "^a(.+)",
@@ -131,8 +229,21 @@
     ],
     "namespace": "http://uri.gbv.de/terminology/bk/",
     "notationPattern": "0|1-2|3-4|5|7-8|[0-9]{2}\\.[0-9]{2}",
-    "prefLabel": { "de": "Basisklassifikation", "en": "Basic Classification" },
-    "uri": "http://bartoc.org/en/node/18785"
+    "prefLabel": {
+      "de": "Basisklassifikation",
+      "en": "Basic Classification"
+    },
+    "uri": "http://bartoc.org/en/node/18785",
+    "API": [
+      {
+        "type": "http://bartoc.org/api-type/jskos",
+        "url": "https://api.dante.gbv.de/"
+      },
+      {
+        "type": "http://bartoc.org/api-type/webservice",
+        "url": "https://service.tib.eu/ts4tib/api/ontologies/bk"
+      }
+    ]
   },
   {
     "ID": "^a(.+)",
@@ -146,8 +257,21 @@
     ],
     "namespace": "http://rvk.uni-regensburg.de/nt/",
     "notationPattern": "(LD,)?[A-Z]([A-Z]( [0-9]+([a-z]|\\.[0-9]+)?( [A-Z][0-9]*)?)?)?( - [A-Z]([A-Z]( [0-9]+([a-z]|\\.[0-9]+)?( [A-Z][0-9]*)?)?)?)?",
-    "prefLabel": { "de": "Regensburger Verbundklassifikation", "en": "Regensburger Association Classification" },
-    "uri": "http://bartoc.org/en/node/533"
+    "prefLabel": {
+      "de": "Regensburger Verbundklassifikation",
+      "en": "Regensburger Association Classification"
+    },
+    "uri": "http://bartoc.org/en/node/533",
+    "API": [
+      {
+        "type": "http://bartoc.org/api-type/jskos",
+        "url": "https://coli-conc.gbv.de/rvk/api/"
+      },
+      {
+        "type": "http://bartoc.org/api-type/webservice",
+        "url": "https://rvk.uni-regensburg.de/regensburger-verbundklassifikation-online/rvk-api"
+      }
+    ]
   },
   {
     "ID": "^a(.+)",
@@ -160,8 +284,16 @@
     ],
     "namespace": "https://uri.gbv.de/terminology/fivr/",
     "notationPattern": "R[A-Z]([0-9][0-9](\\.[0-9][0-9])?)?",
-    "prefLabel": { "de": "FIV-Regionalklassifikation" },
-    "uri": "http://bartoc.org/en/node/20447"
+    "prefLabel": {
+      "de": "FIV-Regionalklassifikation"
+    },
+    "uri": "http://bartoc.org/en/node/20447",
+    "API": [
+      {
+        "type": "http://bartoc.org/api-type/jskos",
+        "url": "https://coli-conc.gbv.de/api/"
+      }
+    ]
   },
   {
     "ID": "^a(.+)",
@@ -174,7 +306,15 @@
     ],
     "namespace": "https://uri.gbv.de/terminology/fivs/",
     "notationPattern": "S[A-Z]([0-9][0-9](\\.[0-9][0-9])?)?",
-    "prefLabel": { "de": "FIV-Sachklassifikation" },
-    "uri": "http://bartoc.org/en/node/20446"
+    "prefLabel": {
+      "de": "FIV-Sachklassifikation"
+    },
+    "uri": "http://bartoc.org/en/node/20446",
+    "API": [
+      {
+        "type": "http://bartoc.org/api-type/jskos",
+        "url": "https://coli-conc.gbv.de/api/"
+      }
+    ]
   }
 ]

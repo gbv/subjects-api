@@ -66,7 +66,7 @@ Requires to start the application once to create SQLite database file under `sub
 
 #### K10Plus
 
-Retrieves bibliographic records in [K10plus Format](https://format.gbv.de/pica/k10plus) via unAPI.
+Retrieves bibliographic records in [K10plus Format](https://format.gbv.de/pica/k10plus) via unAPI. Only supports [subjects](#get-subjects) endpoint.
 
 ~~~
 BACKEND=K10Plus

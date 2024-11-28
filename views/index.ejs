@@ -83,6 +83,13 @@
             url('./fonts/nunito-v16-latin-700italic.ttf') format('truetype'), /* Safari, Android, iOS */
             url('./fonts/nunito-v16-latin-700italic.svg#Nunito') format('svg'); /* Legacy iOS */
       }
+      /* TODO: This should probably be part of the base coli-conc.gbv.de style */
+      .button:disabled {
+        background-color: grey;
+      }
+      .button:disabled:hover {
+        cursor: default;
+      }
     </style>
     <link rel="stylesheet" href="https://coli-conc.gbv.de/css/base.css">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -120,6 +127,22 @@
         This API can be used to query <b>subjects and occurrences</b> from controlled vocabularies used to describe records in K10plus catalogue.
         An <b>occurrence</b> gives the number of times a selected concept is used for subject indexing in K10plus database records. Co-occurrences give the number for combination of concepts so they can be used as mapping recommendations. This service allows to query (co-)occurrences of selected vocabularies (RVK, BK, DDC...) from K10plus database. The results are partly based on <a href="https://doi.org/10.5281/zenodo.7016625">a database snapshot</a>.
         </p>
+      </div>
+      <div class="section">
+        <h2>Query Subjects</h2>
+        <p>
+          <input
+            id="ppn-input"
+            type="text"
+            placeholder="PPN">
+          <button 
+            id="ppn-submit"
+            class="button"
+            disabled>
+            Load
+          </button>
+        </p>
+        <ul id="subjects"></ul>
       </div>
       <div class="section">
         <h2>API</h2>
@@ -172,4 +195,97 @@
       <a href="<%= homepage %>"><%= name %></a> version <%= version %>
     </footer>
   </body>
+  <script src="https://cdn.jsdelivr.net/npm/jskos-tools@1/dist/jskos-tools.min.js"></script>
+  <script>
+    const ppnInputEl = document.getElementById("ppn-input")
+    const ppnSubmitEl = document.getElementById("ppn-submit")
+    const resultsEl = document.getElementById("subjects")
+
+    // Click and type events
+    ppnSubmitEl.addEventListener("click", loadResults)
+    ppnInputEl.addEventListener("keyup", e => {
+      e.preventDefault()
+      if (e.keyCode === 13) {
+        loadResults()
+      } else {
+        ppnSubmitEl.disabled = ppnInputEl.value.length === 0
+      }
+    })
+
+    let schemes = []
+    const schemesPromise = (async () => {
+      try {
+        const res = await fetch("./voc")
+        const json = await res.json()
+        schemes = json.map(scheme => {
+          scheme = new jskos.ConceptScheme(scheme)
+          scheme.notation = [scheme.VOC.toUpperCase()]
+          return scheme
+        })
+      } catch (error) {
+        console.error(error)
+      }
+    })()
+
+    // Set PPN in URL params
+    function setPPN(ppn) {
+      const urlParams = new URLSearchParams(window.location.search)
+      if (ppn) {
+        urlParams.set("ppn", ppn)
+      } else {
+        urlParams.delete("ppn")
+      }
+      // Build new URL
+      let url = `${window.location.href.replace(window.location.search, "")}`
+      if (urlParams.toString()) {
+        url += `?${urlParams.toString()}`
+      }
+      window.history.replaceState({}, "", url)
+    }
+
+    // Get PPN from URL params at first load
+    const urlParams = new URLSearchParams(window.location.search)
+    const ppn = urlParams.get("ppn")
+    if (ppn) {
+      ppnInputEl.value = ppn
+      loadResults()
+    }
+
+    async function loadResults() {
+      const ppn = ppnInputEl.value
+      if (ppn.length === 0) {
+        return
+      }
+      ppnSubmitEl.disabled = true
+      resultsEl.innerHTML = ""
+      setPPN(ppn)
+      await schemesPromise
+      try {
+        const res = await fetch(`./subjects?record=http://uri.gbv.de/document/opac-de-627:ppn:${ppn}`)
+        const subjects = (await res.json()).map(subject => {
+          subject.inScheme[0] = schemes.find(scheme => jskos.compare(scheme, subject.inScheme[0])) || subject.inScheme[0]
+          return subject
+        })
+        for (const subject of subjects) {
+          const voc = jskos.notation(subject.inScheme[0]), notation = jskos.notation(subject)
+          const li = document.createElement("li"), notationEl = document.createElement("b")
+          notationEl.appendChild(document.createTextNode(notation))
+          li.appendChild(document.createTextNode(voc + " "))
+          li.appendChild(notationEl)
+          resultsEl.appendChild(li)
+        }
+        if (subjects.length === 0) {
+          const li = document.createElement("li")
+          li.appendChild(document.createTextNode("No results."))
+          resultsEl.appendChild(li)
+        }
+      } catch (error) {
+        console.error(error)
+        const li = document.createElement("li")
+        li.appendChild(document.createTextNode(`Error: ${error.message}`))
+        resultsEl.appendChild(li)
+      }
+      ppnSubmitEl.disabled = false
+    }
+  </script>
 </html>

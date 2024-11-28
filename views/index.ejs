@@ -142,6 +142,7 @@
             Load
           </button>
         </p>
+        <p id="title"></p>
         <ul id="subjects"></ul>
       </div>
       <div class="section">
@@ -199,6 +200,7 @@
   <script>
     const ppnInputEl = document.getElementById("ppn-input")
     const ppnSubmitEl = document.getElementById("ppn-submit")
+    const titleEl = document.getElementById("title")
     const resultsEl = document.getElementById("subjects")
 
     // Click and type events
@@ -251,6 +253,10 @@
       loadResults()
     }
 
+    async function getTitleName(ppn) {
+      return (await (await fetch(`https://ws.gbv.de/suggest/csl2/?citationstyle=ieee&query=pica.ppn=${ppn}&database=opac-de-627&language=de`)).json())[1][0]
+    }
+
     async function loadResults() {
       const ppn = ppnInputEl.value
       if (ppn.length === 0) {
@@ -258,6 +264,7 @@
       }
       ppnSubmitEl.disabled = true
       resultsEl.innerHTML = ""
+      titleEl.innerText = "Loading..."
       setPPN(ppn)
       await schemesPromise
       try {
@@ -279,11 +286,11 @@
           li.appendChild(document.createTextNode("No results."))
           resultsEl.appendChild(li)
         }
+        const titleName = (await getTitleName(ppn)) || "Unknown title"
+        titleEl.innerText = ppn + ": " + titleName
       } catch (error) {
         console.error(error)
-        const li = document.createElement("li")
-        li.appendChild(document.createTextNode(`Error: ${error.message}`))
-        resultsEl.appendChild(li)
+        titleEl.innerText = `Error: ${error.message}`
       }
       ppnSubmitEl.disabled = false
     }

@@ -149,10 +149,12 @@
         <h2>API</h2>
         <p><b>Endpoints</b></p>
         <ul>
-          <li><a href="./subjects" target="_blank">/subjects</a> to get subjects of a given record (query parameters <code>record</code> and optional <code>scheme</code>)</li>
-          <li><a href="./occurrences" target="_blank">/occurrences</a> to get occurrences for given concept (query parameter <code>member</code>), co-occurrences for given concept and vocabularies (parameters <code>member</code> and <code>scheme</code>), or  of given document (query parameter <code>record</code>).</li>
-          <li><a href="./voc" target="_blank">/voc</a> lists supported vocabularies</li>
-          <li><a href="./databases" target="_blank">/databases</a> lists supported databases</li>
+          <li><a href="./subjects" target="_blank">/subjects</a> (<a href="https://github.com/gbv/subjects-api#get-subjects" target="_blank">documentation</a>) to get subjects of a given record (query parameters <code>record</code> and optional <code>scheme</code>)</li>
+          <li><a href="./records" target="_blank">/records</a> (<a href="https://github.com/gbv/subjects-api#get-records" target="_blank">documentation</a>) to get records with a given subject (query parameter <code>subjects</code>)</li>
+          <li><a href="./occurrences" target="_blank">/occurrences</a> (<a href="https://github.com/gbv/subjects-api#get-occurrences" target="_blank">documentation</a>) to get occurrences for given concept (query parameter <code>member</code>), co-occurrences for given concept and vocabularies (parameters <code>member</code> and <code>scheme</code>), or  of given document (query parameter <code>record</code>).</li>
+          <li><a href="./voc" target="_blank">/voc</a> (<a href="https://github.com/gbv/subjects-api#get-voc" target="_blank">documentation</a>) lists supported vocabularies</li>
+          <li><a href="./databases" target="_blank">/databases</a> (<a href="https://github.com/gbv/subjects-api#get-databases" target="_blank">documentation</a>) lists supported databases</li>
+          <li><a href="./status" target="_blank">/status</a> (<a href="https://github.com/gbv/subjects-api#get-status" target="_blank">documentation</a>) returns information about the service</li>
         </ul>
         <p><b>Sample Queryies</b></p>
         <ul>
@@ -188,7 +190,7 @@
           </li>
         </ul>
         <p>
-          See also <a href="https://github.com/gbv/subjects-api#api" target="_blank">API documentation</a> and implementation for details. Extension and a web interface to use the API are planned (see <a href="https://github.com/gbv/subjects-api/issues/19" target="_blank">#19</a>).
+          See also the <a href="https://github.com/gbv/subjects-api" target="_blank">full documentation</a> and implementation for details. Extension and a web interface to use the API are planned (see <a href="https://github.com/gbv/subjects-api/issues/54" target="_blank">#54</a>).
         </p>
       </div>
     </main>

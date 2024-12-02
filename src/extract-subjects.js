@@ -1,7 +1,8 @@
 import fs from "fs"
+import { config } from "./config.js"
 
 // Load extraction rules
-const vocabularies = JSON.parse(fs.readFileSync("vocabularies.json", "utf8")).reduce((acc, curr) => {
+const vocabularies = JSON.parse(fs.readFileSync(config.schemesFile, "utf8")).reduce((acc, curr) => {
   acc[curr.PICA] = [curr.VOC, new RegExp(curr.ID), new RegExp(curr.SRC)]
   return acc
 }, {})

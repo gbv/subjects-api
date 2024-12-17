@@ -34,26 +34,26 @@
     ]
   },
   "dependencies": {
-    "better-sqlite3": "^11.6.0",
+    "better-sqlite3": "^11.7.0",
     "csv-parser": "^3.0.0",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
-    "express": "^4.21.1",
-    "jskos-tools": "^1.0.42",
-    "neo4j-driver-lite": "^5.26.0",
+    "express": "^4.21.2",
+    "jskos-tools": "^1.0.43",
+    "neo4j-driver-lite": "^5.27.0",
     "node-fetch": "^3.3.2",
-    "nodemon": "^3.1.7",
+    "nodemon": "^3.1.9",
     "portfinder": "^1.0.32"
   },
   "devDependencies": {
-    "@testcontainers/neo4j": "^10.15.0",
+    "@testcontainers/neo4j": "^10.16.0",
     "chai": "^5.1.2",
     "chai-http": "^5.1.1",
-    "eslint": "~9.14",
-    "eslint-config-gbv": "~2.4",
+    "eslint": "~9.16",
+    "eslint-config-gbv": "~2.6",
     "husky": "^9.1.7",
-    "lint-staged": "^15.2.10",
-    "mocha": "^10.8.2",
+    "lint-staged": "^15.2.11",
+    "mocha": "^11.0.1",
     "standard-readme": "^2.0.4",
     "yesno": "^0.4.0"
   }

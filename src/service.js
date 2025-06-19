@@ -100,7 +100,7 @@ export class SubjectsService {
     if (subject.length) {
       const { scheme, notation } = subject[0]
       const result = await this.backend.records({ scheme, notation, limit })
-      return result.map(({ppn}) => `http://uri.gbv.de/document/opac-de-627:ppn:${ppn}`)
+      return result.map(({ppn}) => `http://uri.gbv.de/document/${this.database.dbkey}:ppn:${ppn}`)
     } else {
       return []
     }

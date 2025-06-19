@@ -17,6 +17,7 @@ export const config = {
   port: process.env.PORT || 3141,
   backend: process.env.BACKEND || "SQLite", 
   database: process.env.DATABASE || "./subjects.db",
+  dbkey: process.env.DBKEY || "opac-de-627",
   graph: process.env.GRAPH || "default",
   db: {
     name: process.env.DB_NAME || process.env.DATABASE,
@@ -46,10 +47,10 @@ export const links = readJSON(config.linksFile)
 
 // Supported databases (only K10plus so far)
 export const databases = [{
-  uri: "http://uri.gbv.de/database/opac-de-627",
+  uri: `http://uri.gbv.de/database/${config.dbkey}`,
   prefLabel: {
     en: "K10plus Union Catalogue",
     de: "K10plus-Verbundkatalog",
   },
-  dbkey: "opac-de-627",
+  dbkey: config.dbkey,
 }]

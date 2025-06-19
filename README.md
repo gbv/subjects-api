@@ -50,6 +50,7 @@ Optionally create a configuration file `.env` to change certain config options. 
 PORT=3141
 BACKEND=SQLite
 DATABASE=./subjects.db
+DBKEY=opac-de-627
 SCHEMES=./vocabularies.json
 LINKS=./links.json
 ```

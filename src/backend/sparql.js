@@ -5,6 +5,7 @@ export default class SPARQLBackend {
 
   async connect(config) {
     this.base = (new URL(config.database)).toString() // check for valid URL
+    this.dbkey = config.dbkey
     this.graph = config.graph || "default"
     this.metadataCache = config.metadata
     this.schemes = config.schemes
@@ -40,7 +41,7 @@ export default class SPARQLBackend {
   }
 
   async subjects({ppn}) {
-    const record = `http://uri.gbv.de/document/opac-de-627:ppn:${ppn}`
+    const record = `http://uri.gbv.de/document/${this.dbkey}:ppn:${ppn}`
     return this.sparql(`SELECT ?uri FROM <${this.graph}> { <${record}> <http://purl.org/dc/terms/subject> ?uri }`)
       .then(result => result.map(({uri}) => this.uri2concept(uri.value)).filter(Boolean))
   }

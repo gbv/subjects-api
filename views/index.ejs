@@ -141,6 +141,7 @@
             disabled>
             Load
           </button>
+          database <a href="https://unapi.k10plus.de/<%= dbkey %>">https://unapi.k10plus.de/<%= dbkey %></a>
         </p>
         <p id="title"></p>
         <ul id="subjects"></ul>
@@ -205,6 +206,7 @@
     const ppnSubmitEl = document.getElementById("ppn-submit")
     const titleEl = document.getElementById("title")
     const resultsEl = document.getElementById("subjects")
+    const dbkey = "<%= dbkey %>"
 
     // Click and type events
     ppnSubmitEl.addEventListener("click", loadResults)
@@ -259,7 +261,7 @@
     }
 
     async function getTitleName(ppn) {
-      return (await (await fetch(`https://ws.gbv.de/suggest/csl2/?citationstyle=ieee&query=pica.ppn=${ppn}&database=opac-de-627&language=de`)).json())[1][0]
+      return (await (await fetch(`https://ws.gbv.de/suggest/csl2/?citationstyle=ieee&query=pica.ppn=${ppn}&database=${dbkey}&language=de`)).json())[1][0]
     }
 
     async function loadResults() {
@@ -273,7 +275,7 @@
       setPPN(ppn)
       await schemesPromise
       try {
-        const res = await fetch(`./subjects?record=http://uri.gbv.de/document/opac-de-627:ppn:${ppn}`)
+        const res = await fetch(`./subjects?record=http://uri.gbv.de/document/${dbkey}:ppn:${ppn}`)
         const subjects = (await res.json()).map(subject => {
           subject.inScheme[0] = schemes.find(scheme => jskos.compare(scheme, subject.inScheme[0])) || subject.inScheme[0]
           return subject

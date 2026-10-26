@@ -8,15 +8,10 @@ on:
       - v*
     paths-ignore:
       - '**.md'
-      - '.github/**'
       - jsconfig.json
       - .gitignore
       - eslint.config.js
       - 'test/**'
-
-# Adapted from:
-# - https://github.com/docker/metadata-action#semver
-# - https://docs.github.com/en/actions/publishing-packages/publishing-docker-images#publishing-images-to-github-packages
 
 env:
   REGISTRY: ghcr.io
@@ -28,7 +23,7 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       -
         name: Docker Meta
         id: meta
